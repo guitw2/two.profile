@@ -1,2 +1,2 @@
 # two.dsp
-A project to simplify DSP study and application.
+A javascript and webaudio based project created to simplify DSP study and application.
