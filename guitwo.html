@@ -1,0 +1,157 @@
+<html>
+<meta charset="UTF-8">
+<head>
+<style>
+	body {
+		font-family: "lucida grande","Segoe UI",Arial, sans-serif; 
+		background-color: #323232;
+		//background-image: url("./body-bg.png");
+		font-size: 14px;
+		padding:0;
+		margin:0;
+	}
+	.divider{
+		margin: 1.5em;
+		width: 100%;
+		display:inline-block;
+	}	
+	#container0{
+		display: table;
+		margin: auto;
+	}
+	#container1{
+		position: relative;
+		margin: 3.2em 1em 1em 1em;
+		padding: 1em;
+		//border-radius: 2em;
+		background-color: #424242;
+		width: 800px;
+		height: 640px;
+	}
+	#container2{
+		display: none;
+		position: relative;
+		margin: 3.2em 1em 1em 1em;
+		padding: 1em;
+		//border-radius: 2em;
+		background-color: #424242;
+		width: 800px;
+		height: 640px;
+	}
+	#logo{
+		display: inline-block;
+		border-right: 0.5em solid #323232; 
+		width: 5em;
+	}
+	#audio_file{
+		background-color: inherit;
+		border: 1px solid #aaa; 
+		padding: 0.2em;
+		width: 23em;
+	}
+	#load_file{
+		height: 2em;
+	}
+	#menu{
+		font-size: 0.75em;
+		display: inline-block;
+		color: #424242;
+	}
+	.menuElement{
+		background-color: #232323;
+		border-right: 0.1em solid #323232; 
+		display: inline-block;
+		padding: 0 1em;
+		line-height:2em;
+	}
+	.menuElement:hover{
+		cursor: pointer;
+		background-color: #292929;
+	}
+	.menuSelected{
+		color: #709070;
+	}
+	header{
+		font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
+		font-size:2.2em; 
+		background-color: #232323; 
+		color: #fff; 
+		padding-left: 1em;
+		position: fixed;
+		width: 100%; 
+		height: 1.6em; 
+		line-height:1.6em;
+		display: inline-block;
+	}	
+	footer{
+		margin: 1em;
+		color: #aaa;
+		position:absolute;
+		bottom:0;
+	}	
+	a{
+		color: bbbbcc;
+	}
+	.label_text{
+		color: #aaa;
+		margin: 0;
+	}
+</style>
+<script src="./jquery-3.1.1.min.js"></script>
+<script>	
+	$(document).ready(function(){
+		$("#menuAbout").click(function(){
+			$("#container1").show();
+			$("#container2").hide();
+			$("#menuAbout").addClass("menuSelected");
+			$("#menuDSP").removeClass("menuSelected");
+			
+		});
+		$("#menuDSP").click(function(){
+			window.open("./dsp.html", "_self");
+		});
+	});
+</script>
+</head>
+<body>
+	<header><div id="logo">gui.two</div><div id="menu"><a class="menuElement menuSelected" id="menuAbout">About</a><a class="menuElement" id="menuDSP">two.dsp</a></div></header>
+	<br style="clear: both"/>
+	<div id="container0">
+	<div id="container1">
+	<div id="divider">
+		<div style="float:left;text-align: left">
+			<img src="./images/guitwo.jpg" height="640"></img>
+		</div>
+		<div style="float:right;text-align: left">
+			<p>A curious. Guilherme is always interested on how things works.</p>
+			<p>Graduating in computer's engineering in 2017, 
+			<br/>he is interested in any piece of technology.</p>
+			<p>- Electronics:
+			<br/>In primary school, started to wonder how circuits worked.
+			<br/>After, got in love with his first Arduino.
+			<br/>In college, learned about VHDL and advanced circuitry.
+			<br/>Also loves to play with audio amplifyers ICs, on free time.
+			</p>
+			<p>- Programming:
+			<br/>Still young, started with "hello world!" in C.
+			<br/>Created some small programs with Python,
+			<br/>like a remote controller for media playback controll
+			<br/>and an image to ascii converter.
+			<br/>Currently working on a Javascript DSP project</p>
+			<p>- Art:
+			<br/>Remember Winamp? 
+			<br/>he used to make music reactive visuals with it.
+			<br/>Also, knows some tricks on photoshop .
+			<br/>Pixel, ASCII, Glitch or macro photography, loves it all! 
+			</p>
+		</div>
+	</div>
+	</div>
+	<div id="container2">Aqui vai o designer de filtros</div>
+	</div>
+	<br style="clear:both"/>
+	<footer>
+	  <p>Guilherme Tworkowski | <a href="mailto:guitw2@gmail.com">guitw2@gmail.com</a></p>
+	</footer>
+</body>
+</html>
