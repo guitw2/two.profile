@@ -408,6 +408,11 @@
 			canvasCtxImpulse.fillStyle = '#424242';
 			canvasCtxImpulse.fillRect(0, 0, canvasImpulse.width, canvasImpulse.height);
 			canvasCtxImpulse.lineWidth = 1;
+			canvasCtxImpulse.strokeStyle = '#222';
+			canvasCtxImpulse.beginPath();
+			canvasCtxImpulse.moveTo(0, canvasImpulse.height/2+1);
+			canvasCtxImpulse.lineTo(canvasImpulse.width, canvasImpulse.height/2+1);
+			canvasCtxImpulse.stroke();
 			canvasCtxImpulse.strokeStyle = '#aaa';
 			canvasCtxImpulse.beginPath();
 			var sliceWidth = canvasImpulse.width * 1.0 / coeficientsLength;
