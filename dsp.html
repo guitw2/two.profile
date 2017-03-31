@@ -51,6 +51,9 @@
 	#load_file{
 		height: 2em;
 	}
+	#load_input{
+		height: 2em;
+	}
 	#getCoeficients{
 		height: 2em;
 	}
@@ -350,6 +353,25 @@
 			}
 		);
 		
+		$("#load_input").click(
+			function(){
+				navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
+				navigator.getUserMedia(
+					{ audio: true, video: false }, 
+					function (mediaStream) {
+						// On success we return a WebRTC media stream
+						// createMediaStreamSource will create an audio source node that wraps the MediaStream 
+						webRtcSource = audioContext.createMediaStreamSource(mediaStream);
+						// Connect this source directly to the audio destination (your speakers)
+						webRtcSource.connect(audioContext.destination);
+					}, 
+					function (error) {
+						console.log("There was an error when getting microphone input: " + error);
+					}
+				);
+			}
+		);
+		
 		$("#play").click(
 			function(){
 				if (!loaded) {
@@ -500,6 +522,7 @@
 	<div class="divider">
 		<input class="input_button" id="audio_file" type="file" accept="audio/*"/>
 		<button id="load_file">Carregar áudio</button>
+		<button id="load_input">Carregar entrada</button>
 	</div>
 	
 	<br style="clear: both"/>
