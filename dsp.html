@@ -372,7 +372,7 @@
 		
 		$("#load_input").click(
 			function(){
-				navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
+				navigator.getUserMedia = ( navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);;
 				navigator.getUserMedia(
 					{ audio: true, video: false }, 
 					function (mediaStream) {
