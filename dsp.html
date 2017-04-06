@@ -67,6 +67,9 @@
 		display: inline-block;
 		color: #424242;
 	}
+	#timeInfo{
+		display: inline;
+	}
 	.menuElement{
 		background-color: #232323;
 		border-right: 0.1em solid #323232; 
@@ -213,6 +216,7 @@
 		var loaded=false;
 		var impulse_loaded=false;
 		var audioCtx = new(AudioContext || webkitAudioContext);
+		var inputStreamSource = null;
 		var source = audioCtx.createBufferSource();
 		var convolver = audioCtx.createConvolver();
 		var processorBufferSize=2048;//16384
@@ -236,6 +240,10 @@
 		var canvasCtxWave = canvasWave.getContext("2d");
 		var canvasCtxImpulse = canvasImpulse.getContext("2d");
 		
+		var processingTime = null;
+		
+		var sourceOption = null;
+		
 		function resize_canvas(){
 			canvasWave.width  = container1.clientWidth*.97;
 			canvasWave.height = 100;
@@ -247,8 +255,8 @@
 			resize_canvas();
 		});
 		
-		function draw() {			
-			drawVisual = requestAnimationFrame(draw);
+		function drawWave() {			
+			drawVisual = requestAnimationFrame(drawWave);
 			if(visual_type=='t'){
 				analyser.getByteTimeDomainData(dataArray);
 				canvasCtxWave.fillStyle = '#424242';
@@ -293,8 +301,12 @@
 			}			
 		};
 		
+		function drawInfo() {			
+			drawVisual = requestAnimationFrame(drawInfo);				
+		};
+		
 		resize_canvas();
-		draw();		
+		drawWave();		
 		
 		scriptNode.onaudioprocess = function(audioProcessingEvent) {	
 			var inputBuffer = audioProcessingEvent.inputBuffer;
@@ -303,12 +315,13 @@
 			for (var channel = 0; channel < outputBuffer.numberOfChannels; channel++) {
 				var inputData = inputBuffer.getChannelData(channel);
 				var outputData = outputBuffer.getChannelData(channel);
-
+				var dIn = new Date();
+				var timeIn = dIn.getTime();
 				for (var sample = 0; sample < processorBufferSize; sample++){
 					processando=0;
 					for(var index=0; index < coeficients.length; index++){
 						if(sample+index<coeficients.length){
-							processando += bufferSecundario[channel][(sample+index)+(processorBufferSize-coeficients.length)]*coeficients[index];				
+							processando += bufferSecundario[channel][(sample+index)+(processorBufferSize-coeficients.length)]*coeficients[index];			
 						}
 						else{
 							processando += inputData[(sample+index)-coeficients.length]*coeficients[index];				
@@ -318,6 +331,9 @@
 					outputData[sample]=processando;		
 				}
 				bufferSecundario[channel]=inputData;
+				var dOut = new Date();
+				var timeOut=dOut.getTime() - timeIn;
+				console.log(timeOut);
 			}			
 		}		
 		
@@ -339,6 +355,7 @@
 				reader.readAsArrayBuffer(file);
 				reader.onloadend = function(event) {
 					loaded=true;
+					sourceOption="file";
 					$("#play").removeAttr("disabled");
 					$("#stop").removeAttr("disabled");
 					modal.style.display = "none";
@@ -359,14 +376,13 @@
 				navigator.getUserMedia(
 					{ audio: true, video: false }, 
 					function (mediaStream) {
-						// On success we return a WebRTC media stream
-						// createMediaStreamSource will create an audio source node that wraps the MediaStream 
-						webRtcSource = audioContext.createMediaStreamSource(mediaStream);
-						// Connect this source directly to the audio destination (your speakers)
-						webRtcSource.connect(audioContext.destination);
+						sourceOption = "input";
+						inputStreamSource = audioCtx.createMediaStreamSource(mediaStream);
+						$("#play").removeAttr("disabled");
+						$("#stop").removeAttr("disabled");
 					}, 
 					function (error) {
-						console.log("There was an error when getting microphone input: " + error);
+						window.alert("There was an error when getting microphone input: " + error);
 					}
 				);
 			}
@@ -374,33 +390,52 @@
 		
 		$("#play").click(
 			function(){
-				if (!loaded) {
-					  alert('Selecione um arquivo de áudio e clique em carregar primeiro');
-					  return;
-				}
-				else{
-					$("#play").attr("disabled","disabled");
-					source = audioCtx.createBufferSource();
-					source.buffer=audioBuffer;
-					if($("#power").prop("checked")){
-						source.connect(scriptNode);	
-						scriptNode.connect(analyser);
-						analyser.connect(masterGain);
-						masterGain.connect(audioCtx.destination);
-					}
-					else{
-						source.connect(analyser);					
-						analyser.connect(masterGain);
-						masterGain.connect(audioCtx.destination);			
-					}
-					source.start();
+				switch(sourceOption){
+					case "file":
+						if (!loaded) {
+							  alert('Selecione um arquivo de áudio e clique em carregar primeiro');
+							  return;
+						}
+						else{
+							$("#play").attr("disabled","disabled");
+							source = audioCtx.createBufferSource();
+							source.buffer=audioBuffer;
+							if($("#power").prop("checked")){
+								source.connect(scriptNode);	
+								scriptNode.connect(analyser);
+								analyser.connect(masterGain);
+								masterGain.connect(audioCtx.destination);
+							}
+							else{
+								source.connect(analyser);					
+								analyser.connect(masterGain);
+								masterGain.connect(audioCtx.destination);			
+							}
+							source.start();
+						}
+						break;
+					case "input":
+						$("#play").attr("disabled","disabled");
+						source=inputStreamSource;
+						if($("#power").prop("checked")){
+							source.connect(scriptNode);	
+							scriptNode.connect(analyser);
+							analyser.connect(masterGain);
+							masterGain.connect(audioCtx.destination);
+						}
+						else{
+							source.connect(analyser);					
+							analyser.connect(masterGain);
+							masterGain.connect(audioCtx.destination);			
+						}
+						break;
 				}
 			}
 		);			
 		
 		$("#stop").click(
 			function(){
-				source.stop();
+				disconnectAll();
 				$("#play").removeAttr("disabled");
 			}
 		);
@@ -501,7 +536,7 @@
 </script>
 </head>
 <body>
-	<header><div id="logo">two.DSP</div><div id="menu"><a class="menuElement menuSelected" id="menuPlayer">Player</a><a class="menuElement" id="menuFilter">Filtro</a></div></header>
+	<header><div id="logo">two.DSP</div><div id="menu"><a class="menuElement menuSelected" id="menuPlayer">Player</a><a class="menuElement" id="menuFilter">Filtro</a><canvas width="100" height="30" id="timeInfo"></canvas></div></header>
 	<br style="clear: both"/>
 	<div id="container0">
 	<div id="container1">
