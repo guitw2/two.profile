@@ -12,7 +12,7 @@
 		margin:0;
 	}
 	.divider{
-		margin: 1.5em;
+		margin: 0.75em 1.5em;
 		width: 100%;
 		display:inline-block;
 	}	
@@ -123,6 +123,13 @@
 		height: 10em;
 		margin: 2em;
 	}	
+	.record_button{
+		background-color: #aa4242;
+		width: 5em;
+		height: 5em;
+		margin: 2em;
+		border-radius: 100%;
+	}
 	.play_button[disabled]{
 		background-color: #525252;
 	}	
@@ -131,7 +138,12 @@
 		height: 10em;
 		margin: 2em;
 		color: #aa4242;
-	}	
+	}
+	.stop_record_button{
+		width: 5em;
+		height: 5em;
+		color: #aa4242;
+	}		
 	.stop_button[disabled]{
 		background-color: #525252;
 		color: #424242;
@@ -216,16 +228,17 @@
 		var loaded=false;
 		var impulse_loaded=false;
 		var audioCtx = new(AudioContext || webkitAudioContext);
+		var inputStreamSource = null;
 		var source = audioCtx.createBufferSource();
 		var convolver = audioCtx.createConvolver();
-		var processorBufferSize=2048;//16384
+		var processorBufferSize=4096;//16384
 		var scriptNode = audioCtx.createScriptProcessor(processorBufferSize);
 		var bufferSecundario = [new Float32Array(processorBufferSize),new Float32Array(processorBufferSize)];
 		var inputData = new Float32Array(processorBufferSize);
 		var audioBuffer= null;
 		var masterGain = audioCtx.createGain();
 		var analyser = audioCtx.createAnalyser();
-		analyser.fftSize = 2048;
+		analyser.fftSize = 1024;
 		var bufferLength = analyser.frequencyBinCount;
 		var dataArray = new Uint8Array(bufferLength);
 		var textCoeficients = document.getElementById("textCoeficients");
@@ -240,6 +253,10 @@
 		var canvasCtxImpulse = canvasImpulse.getContext("2d");
 		
 		var processingTime = null;
+		
+		var sourceOption = null;
+
+		var playing = false;
 		
 		function resize_canvas(){
 			canvasWave.width  = container1.clientWidth*.97;
@@ -308,12 +325,11 @@
 		scriptNode.onaudioprocess = function(audioProcessingEvent) {	
 			var inputBuffer = audioProcessingEvent.inputBuffer;
 			var outputBuffer = audioProcessingEvent.outputBuffer;
-			
+			var dIn = new Date();
+			var timeIn = dIn.getTime();			
 			for (var channel = 0; channel < outputBuffer.numberOfChannels; channel++) {
 				var inputData = inputBuffer.getChannelData(channel);
 				var outputData = outputBuffer.getChannelData(channel);
-				var dIn = new Date();
-				var timeIn = dIn.getTime();
 				for (var sample = 0; sample < processorBufferSize; sample++){
 					processando=0;
 					for(var index=0; index < coeficients.length; index++){
@@ -328,10 +344,10 @@
 					outputData[sample]=processando;		
 				}
 				bufferSecundario[channel]=inputData;
-				var dOut = new Date();
-				var timeOut=dOut.getTime() - timeIn;
-				console.log(timeOut);
-			}			
+			}	
+			var dOut = new Date();
+			var timeOut=dOut.getTime() - timeIn;
+			console.log(timeOut);		
 		}		
 		
 		var coeficients = new Float32Array([-4.61221813409777e-07,-3.64700036646293e-07,-5.86018381358106e-07,-8.83837671258784e-07,-1.27144219510340e-06,-1.76207594777872e-06,-2.36838674226705e-06,-3.10176667051084e-06,-3.97159119894647e-06,-4.98436287284348e-06,-6.14276967159529e-06,-7.44467243345447e-06,-8.88204036355284e-06,-1.04398583466168e-05,-1.20950344825225e-05,-1.38153408111398e-05,-1.55584244430049e-05,-1.72709301051700e-05,-1.88877782822445e-05,-2.03316455144564e-05,-2.15126948434034e-05,-2.23286047152337e-05,-2.26649437158585e-05,-2.23959361965040e-05,-2.13856600461725e-05,-1.94897125038024e-05,-1.65573729329209e-05,-1.24342828979679e-05,-6.96565371732195e-06,2.90510579063578e-20,8.60661537667441e-06,1.89858536532914e-05,3.12519340018792e-05,4.54960888232423e-05,6.17807170069518e-05,8.01333281392789e-05,0.000100540386855004,0.000122941182035277,0.000147221859925730,0.000173209773044306,0.000200668307521005,0.000229292359823256,0.000258704639250128,0.000288452974734682,0.000318008803025633,0.000346767009928412,0.000374047286735914,0.000399097150107954,0.000421096755385477,0.000439165610660744,0.000452371271974843,0.000459740068986824,0.000460269875666469,0.000452944902421480,0.000436752445098166,0.000410701483109365,0.000373842974252016,0.000325291648369356,0.000264249056748890,0.000190027589943309,0.000102075134513563,-2.72490215764211e-19,-0.000116404287789644,-0.000247134761363565,-0.000391955812600425,-0.000550377496556929,-0.000721635824479785,-0.000904675534450830,-0.00109813582132228,-0.00130033949166174,-0.00150928598406428,-0.00172264866031244,-0.00193777672856664,-0.00215170210632835,-0.00236115146880895,-0.00256256365822339,-0.00275211255226110,-0.00292573540659972,-0.00307916659801957,-0.00320797660279821,-0.00330761595109749,-0.00337346380358864,-0.00340088070326541,-0.00338526496499103,-0.00332211207955560,-0.00320707642961284,-0.00303603454350207,-0.00280514905124045,-0.00251093245637810,-0.00215030979927871,-0.00172067926287830,-0.00121996976203360,-0.000646694562916047,8.52635256252286e-19,0.000720291604772966,0.00151364566318813,0.00237878645649018,0.00331367637667902,0.00431550386739363,0.00538068054879504,0.00650484789012477,0.00768289366348807,0.00890897827483502,0.0101765709252102,0.0114784954093798,0.0128069852123024,0.0141537474190173,0.0155100348128573,0.0168667254028646,0.0182144084962895,0.0195434763183103,0.0208442200807393,0.0221069293163548,0.0233219932272867,0.0244800027459678,0.0255718519766262,0.0265888376749057,0.0275227554333770,0.0283659912715117,0.0291116073798512,0.0297534208389613,0.0302860742233365,0.0307050971073831,0.0310069576133335,0.0311891032775162,0.0312499906596634,0.0311891032775162,0.0310069576133335,0.0307050971073831,0.0302860742233365,0.0297534208389613,0.0291116073798512,0.0283659912715117,0.0275227554333770,0.0265888376749057,0.0255718519766262,0.0244800027459678,0.0233219932272867,0.0221069293163548,0.0208442200807393,0.0195434763183103,0.0182144084962895,0.0168667254028646,0.0155100348128573,0.0141537474190173,0.0128069852123024,0.0114784954093798,0.0101765709252102,0.00890897827483502,0.00768289366348807,0.00650484789012477,0.00538068054879504,0.00431550386739363,0.00331367637667902,0.00237878645649018,0.00151364566318813,0.000720291604772966,8.52635256252286e-19,-0.000646694562916047,-0.00121996976203360,-0.00172067926287830,-0.00215030979927871,-0.00251093245637810,-0.00280514905124045,-0.00303603454350207,-0.00320707642961284,-0.00332211207955560,-0.00338526496499103,-0.00340088070326541,-0.00337346380358864,-0.00330761595109749,-0.00320797660279821,-0.00307916659801957,-0.00292573540659972,-0.00275211255226110,-0.00256256365822339,-0.00236115146880895,-0.00215170210632835,-0.00193777672856664,-0.00172264866031244,-0.00150928598406428,-0.00130033949166174,-0.00109813582132228,-0.000904675534450830,-0.000721635824479785,-0.000550377496556929,-0.000391955812600425,-0.000247134761363565,-0.000116404287789644,-2.72490215764211e-19,0.000102075134513563,0.000190027589943309,0.000264249056748890,0.000325291648369356,0.000373842974252016,0.000410701483109365,0.000436752445098166,0.000452944902421480,0.000460269875666469,0.000459740068986824,0.000452371271974843,0.000439165610660744,0.000421096755385477,0.000399097150107954,0.000374047286735914,0.000346767009928412,0.000318008803025633,0.000288452974734682,0.000258704639250128,0.000229292359823256,0.000200668307521005,0.000173209773044306,0.000147221859925730,0.000122941182035277,0.000100540386855004,8.01333281392789e-05,6.17807170069518e-05,4.54960888232423e-05,3.12519340018792e-05,1.89858536532914e-05,8.60661537667441e-06,2.90510579063578e-20,-6.96565371732195e-06,-1.24342828979679e-05,-1.65573729329209e-05,-1.94897125038024e-05,-2.13856600461725e-05,-2.23959361965040e-05,-2.26649437158585e-05,-2.23286047152337e-05,-2.15126948434034e-05,-2.03316455144564e-05,-1.88877782822445e-05,-1.72709301051700e-05,-1.55584244430049e-05,-1.38153408111398e-05,-1.20950344825225e-05,-1.04398583466168e-05,-8.88204036355284e-06,-7.44467243345447e-06,-6.14276967159529e-06,-4.98436287284348e-06,-3.97159119894647e-06,-3.10176667051084e-06,-2.36838674226705e-06,-1.76207594777872e-06,-1.27144219510340e-06,-8.83837671258784e-07,-5.86018381358106e-07,-3.64700036646293e-07,-4.61221813409777e-07]);
@@ -352,6 +368,7 @@
 				reader.readAsArrayBuffer(file);
 				reader.onloadend = function(event) {
 					loaded=true;
+					sourceOption="file";
 					$("#play").removeAttr("disabled");
 					$("#stop").removeAttr("disabled");
 					modal.style.display = "none";
@@ -368,53 +385,110 @@
 		
 		$("#load_input").click(
 			function(){
-				navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
-				navigator.getUserMedia(
-					{ audio: true, video: false }, 
-					function (mediaStream) {
-						// On success we return a WebRTC media stream
-						// createMediaStreamSource will create an audio source node that wraps the MediaStream 
-						webRtcSource = audioContext.createMediaStreamSource(mediaStream);
-						// Connect this source directly to the audio destination (your speakers)
-						webRtcSource.connect(audioContext.destination);
-					}, 
-					function (error) {
-						console.log("There was an error when getting microphone input: " + error);
-					}
-				);
+				if (navigator.webkitGetUserMedia !== undefined) {
+				    constraint = {
+				        video: false,
+				        audio: {
+				            optional: [
+				                {googAutoGainControl: false},
+				                {googAutoGainControl2: false},
+				                {echoCancellation: false},
+				                {googEchoCancellation: false},
+				                {googEchoCancellation2: false},
+				                {googDAEchoCancellation: false},
+				                {googNoiseSuppression: false},
+				                {googNoiseSuppression2: false},
+				                {googHighpassFilter: false},
+				                {googTypingNoiseDetection: false},
+				                {googAudioMirroring: false}
+				            ]
+				        }
+				    }
+				}
+				else if (navigator.mozGetUserMedia !== undefined) {
+				    constraint = {
+				        video: false,
+				        audio: {
+				            echoCancellation: false,
+				            mozAutoGainControl: false
+				            //mozNoiseSuppression: false
+				        }
+				    }
+
+				}
+				else {
+				    constraint = {
+				        video: false,
+				        audio: {
+				            echoCancellation: false
+				        }
+				    }
+				}
+				navigator.mediaDevices.getUserMedia(constraint).then(function(stream) {
+						sourceOption = "input";
+						inputStreamSource = audioCtx.createMediaStreamSource(stream);
+						$("#play").removeAttr("disabled");
+					}).catch(function(err) {
+						window.alert("Ocorreu um erro ao obter a entrada de áudio: " + err);
+				});
 			}
 		);
 		
 		$("#play").click(
 			function(){
-				if (!loaded) {
-					  alert('Selecione um arquivo de áudio e clique em carregar primeiro');
-					  return;
-				}
-				else{
-					$("#play").attr("disabled","disabled");
-					source = audioCtx.createBufferSource();
-					source.buffer=audioBuffer;
-					if($("#power").prop("checked")){
-						source.connect(scriptNode);	
-						scriptNode.connect(analyser);
-						analyser.connect(masterGain);
-						masterGain.connect(audioCtx.destination);
-					}
-					else{
-						source.connect(analyser);					
-						analyser.connect(masterGain);
-						masterGain.connect(audioCtx.destination);			
-					}
-					source.start();
+				switch(sourceOption){
+					case "file":
+						if (!loaded) {
+							  alert('Selecione um arquivo de áudio e clique em carregar primeiro');
+							  return;
+						}
+						else{
+							playing = true;
+							$("#play").attr("disabled","disabled");
+							$("#stop").removeAttr("disabled");
+							source = audioCtx.createBufferSource();
+							source.buffer=audioBuffer;
+							if($("#power").prop("checked")){
+								source.connect(scriptNode);	
+								scriptNode.connect(analyser);
+								analyser.connect(masterGain);
+								masterGain.connect(audioCtx.destination);
+							}
+							else{
+								source.connect(analyser);					
+								analyser.connect(masterGain);
+								masterGain.connect(audioCtx.destination);			
+							}
+							source.start();
+						}
+						break;
+					case "input":
+						playing=true;
+						$("#play").attr("disabled","disabled");
+						$("#stop").removeAttr("disabled");
+						source=inputStreamSource;
+						if($("#power").prop("checked")){
+							source.connect(scriptNode);	
+							scriptNode.connect(analyser);
+							analyser.connect(masterGain);
+							masterGain.connect(audioCtx.destination);
+						}
+						else{
+							source.connect(analyser);					
+							analyser.connect(masterGain);
+							masterGain.connect(audioCtx.destination);			
+						}
+						break;
 				}
 			}
 		);			
 		
 		$("#stop").click(
 			function(){
-				source.stop();
+				disconnectAll();
 				$("#play").removeAttr("disabled");
+				$("#stop").attr("disabled","disabled");
+				playing=false;
 			}
 		);
 		$("#oscilloscope").click(function(){
@@ -483,18 +557,20 @@
 		});
 		
 		$("#power").change(function(){
-			if($(this).prop("checked")){
-				disconnectAll();
-				source.connect(scriptNode);	
-				scriptNode.connect(analyser);
-				analyser.connect(masterGain);
-				masterGain.connect(audioCtx.destination);
-			}
-			else{
-				disconnectAll();
-				source.connect(analyser);					
-				analyser.connect(masterGain);
-				masterGain.connect(audioCtx.destination);				
+			if(playing){
+				if($(this).prop("checked")){
+					disconnectAll();
+					source.connect(scriptNode);	
+					scriptNode.connect(analyser);
+					analyser.connect(masterGain);
+					masterGain.connect(audioCtx.destination);
+				}
+				else{
+					disconnectAll();
+					source.connect(analyser);					
+					analyser.connect(masterGain);
+					masterGain.connect(audioCtx.destination);				
+				}
 			}
 		});
 		
@@ -536,25 +612,30 @@
 		<input class="input_button" id="audio_file" type="file" accept="audio/*"/>
 		<button id="load_file">Carregar áudio</button>
 		<button id="load_input">Carregar entrada</button>
-	</div>
-	
+	</div>	
 	<br style="clear: both"/>
 	<div class="divider">
 		<button class="play_button" id="play" disabled="disabled">PLAY</button>
 		<button class="stop_button" id="stop" disabled="disabled">STOP</button>
 	</div>
 	<br style="clear:both"/>
-	<div class="divider">	
-		<label class="switch" for="power">			
-			<input type="checkbox" id="power">			
-		  <div class="slider"></div>		  
-		</label>
-		<input id="vol-control" type="range" value="0.3" min="0" max="1" step="0.05"></input><br/>
-		<div style="display:table">
-			<div style="display:inline-block"><p class="label_text">Filtragem</p></div>
-			<div style="display:inline-block; margin-left: 2.5em;"><p id="volume_text" class="label_text">Volume: 30%</p></div>
+	<div class="divider">
+		<div style="display:inline-block;">	
+			<label class="switch" for="power">			
+				<input type="checkbox" id="power">			
+			  <div class="slider"></div>		  
+			</label>
+			<input id="vol-control" type="range" value="0.3" min="0" max="1" step="0.05"></input><br/>
+			<div style="display:table">
+				<div style="display:inline-block"><p class="label_text">Filtragem</p></div>
+				<div style="display:inline-block; margin-left: 2.5em;"><p id="volume_text" class="label_text">Volume: 30%</p></div>
+			</div>
 		</div>
-	</div>
+		<div style="display:inline-block; margin: auto 0 auto 20%;">
+			<button class="record_button" id="record" disabled="disabled">Record</button>
+			<button class="stop_record_button" id="stop_recording" disabled="disabled">Stop</button>
+		</div>
+	</div>	
 	<br style="clear: both"/>	
 	<canvas id="oscilloscope"></canvas>	
 	</div>
