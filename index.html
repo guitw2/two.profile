@@ -28,7 +28,7 @@
 		background-color: #424242;
 		max-width: 860px;
 	}
-	#container2{
+	#container2,#container3,#container4{
 		display: none;
 		position: relative;
 		margin: 3.2em 1em 1em 1em;
@@ -256,11 +256,13 @@
 		var canvasImpulse = document.getElementById("graphImpulse");
 		var container1 = document.getElementById("container1");
 		var container2 = document.getElementById("container2");
+		var container3 = document.getElementById("container3");
+		var container4 = document.getElementById("container4");
 		var canvasCtxWave = canvasWave.getContext("2d");
 		var canvasCtxImpulse = canvasImpulse.getContext("2d");
 		
 		var processingTime = null;
-		
+
 		var sourceOption = null;
 
 		var playing = false;
@@ -597,16 +599,44 @@
 		$("#menuPlayer").click(function(){
 			$("#container1").show();
 			$("#container2").hide();
+			$("#container3").hide();
+			$("#container4").hide();
 			$("#menuPlayer").addClass("menuSelected");
 			$("#menuFilter").removeClass("menuSelected");
+			$("#menuConfig").removeClass("menuSelected");
+			$("#menuAbout").removeClass("menuSelected");
 			resize_canvas();
 		});
 		$("#menuFilter").click(function(){
 			$("#container1").hide();
 			$("#container2").show();
+			$("#container3").hide();
+			$("#container4").hide();
 			$("#menuPlayer").removeClass("menuSelected");
 			$("#menuFilter").addClass("menuSelected");
+			$("#menuConfig").removeClass("menuSelected");
+			$("#menuAbout").removeClass("menuSelected");
 			resize_canvas();
+		});
+		$("#menuConfig").click(function(){
+			$("#container1").hide();
+			$("#container2").hide();
+			$("#container3").show();
+			$("#container4").hide();
+			$("#menuPlayer").removeClass("menuSelected");
+			$("#menuFilter").removeClass("menuSelected");
+			$("#menuConfig").addClass("menuSelected");
+			$("#menuAbout").removeClass("menuSelected");
+		});
+		$("#menuAbout").click(function(){
+			$("#container1").hide();
+			$("#container2").hide();
+			$("#container3").hide();
+			$("#container4").show();
+			$("#menuPlayer").removeClass("menuSelected");
+			$("#menuFilter").removeClass("menuSelected");
+			$("#menuConfig").removeClass("menuSelected");
+			$("#menuAbout").addClass("menuSelected");
 		});
 	});
 </script>
@@ -618,57 +648,58 @@
 			<a class="menuElement menuSelected" id="menuPlayer">Player</a>
 			<a class="menuElement" id="menuFilter">Filtro</a>
 			<a class="menuElement" id="menuConfig">Config</a>
+			<a class="menuElement" id="menuAbout">Sobre</a>
 			<canvas width="100" height="30" id="timeInfo"></canvas>
 		</div>
 	</header>
 	<br style="clear: both"/>
 	<div id="container0">
-	<div id="container1">
-	<div id="myModal" class="modal">
-		<div class="modal-content">
-			<center>
-				<p style="color: #232323;">Carregando o arquivo</p>
-			</center>
-	  </div>
-	</div>
-	<div id="decodingModal" class="modal">
-		<center>
+		<div id="container1">
+		<div id="myModal" class="modal">
 			<div class="modal-content">
-				<p style="color: #232323;">Decodificando o arquivo</p>
-			</div>
-		</center>
-	</div>
-	<div class="divider">
-		<input class="input_button" id="audio_file" type="file" accept="audio/*"/>
-		<button id="load_file">Carregar áudio</button>
-		<button id="load_input">Carregar entrada</button>
-		<div style=" display:inline-block; margin-left: 3em; padding-left: 3em; border-left: 1px solid #525252;">
-			<button class="record_button" id="record" disabled="disabled">Record</button>
-			<button class="cancel_record_button" id="cancel_recording" disabled="disabled">Cancel</button>
+				<center>
+					<p style="color: #232323;">Carregando o arquivo</p>
+				</center>
+		  </div>
 		</div>
-	</div>	
-	<br style="clear: both"/>
-	<div class="divider">
-		<button class="play_button" id="play" disabled="disabled">PLAY</button>
-		<button class="stop_button" id="stop" disabled="disabled">STOP</button>
-	</div>
-	<br style="clear:both"/>
-	<div class="divider">
-		<div style="display:inline-block;">	
-			<label class="switch" for="power">			
-				<input type="checkbox" id="power">			
-			  <div class="slider"></div>		  
-			</label>
-			<input id="vol-control" type="range" value="0.3" min="0" max="1" step="0.05"></input><br/>
-			<div style="display:table">
-				<div style="display:inline-block"><p class="label_text">Filtragem</p></div>
-				<div style="display:inline-block; margin-left: 2.5em;"><p id="volume_text" class="label_text">Volume: 30%</p></div>
-			</div>
+		<div id="decodingModal" class="modal">
+			<center>
+				<div class="modal-content">
+					<p style="color: #232323;">Decodificando o arquivo</p>
+				</div>
+			</center>
 		</div>
-	</div>	
-	<br style="clear: both"/>	
-	<canvas id="oscilloscope"></canvas>	
-	</div>
+		<div class="divider">
+			<input class="input_button" id="audio_file" type="file" accept="audio/*"/>
+			<button id="load_file">Carregar áudio</button>
+			<button id="load_input">Carregar entrada</button>
+			<div style=" display:inline-block; margin-left: 3em; padding-left: 3em; border-left: 1px solid #525252;">
+				<button class="record_button" id="record" disabled="disabled">Record</button>
+				<button class="cancel_record_button" id="cancel_recording" disabled="disabled">Cancel</button>
+			</div>
+		</div>	
+		<br style="clear: both"/>
+		<div class="divider">
+			<button class="play_button" id="play" disabled="disabled">PLAY</button>
+			<button class="stop_button" id="stop" disabled="disabled">STOP</button>
+		</div>
+		<br style="clear:both"/>
+		<div class="divider">
+			<div style="display:inline-block;">	
+				<label class="switch" for="power">			
+					<input type="checkbox" id="power">			
+				  <div class="slider"></div>		  
+				</label>
+				<input id="vol-control" type="range" value="0.3" min="0" max="1" step="0.05"></input><br/>
+				<div style="display:table">
+					<div style="display:inline-block"><p class="label_text">Filtragem</p></div>
+					<div style="display:inline-block; margin-left: 2.5em;"><p id="volume_text" class="label_text">Volume: 30%</p></div>
+				</div>
+			</div>
+		</div>	
+		<br style="clear: both"/>	
+		<canvas id="oscilloscope"></canvas>	
+		</div>
 		<div id="container2">
 			<p>Coeficientes separados por vírgula :</p>
 			<textarea id="textCoeficients" rows="20" cols="115" ></textarea>
@@ -676,6 +707,12 @@
 			<canvas id="graphImpulse"></canvas>
 			<br/>	
 			<button id="getCoeficients">Atualizar filtro</button>
+		</div>
+		<div id="container3">
+			<p>aqui vão as configurações</p>
+		</div>
+		<div id="container4">
+			<img src="./img/twoDSP.png" width=840/>
 		</div>
 	</div>
 	<br/>
