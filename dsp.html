@@ -259,6 +259,7 @@
 		var textCoeficients = document.getElementById("textCoeficients");
 		analyser.getByteTimeDomainData(dataArray);
 		masterGain.gain.value=0.3;
+		var dest = audioCtx.createMediaStreamDestination();
 		var configs={
 						workerDir: "lib/web-audio-recorder-js/",
 						numChannels: 2
