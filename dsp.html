@@ -570,10 +570,10 @@
 		$("#record").click(
 			function(){
 				if(recorder.isRecording()){
-					recorder.finishRecording();
 					recorder.onComplete = function(recorder, blob) {
 						document.querySelector("audio").src = URL.createObjectURL(blob);
 					}
+					recorder.finishRecording();
 				}
 				else{
 					var configs={
