@@ -5,14 +5,14 @@
 <style>
 	body {
 		font-family: "lucida grande","Segoe UI",Arial, sans-serif; 
-		background-color: #323232;
-		//background-image: url("./body-bg.png");
+		background-color: #282828;
+		/*background-image: url("./body-bg.png");*/
 		font-size: 14px;
 		padding:0;
 		margin:0;
 	}
 	.divider{
-		margin: 1.5em;
+		margin: 0.75em 1.5em;
 		width: 100%;
 		display:inline-block;
 	}	
@@ -24,22 +24,23 @@
 		position: relative;
 		margin: 3.2em 1em 1em 1em;
 		padding: 1em;
-		//border-radius: 2em;
+		/*border-radius: 2em;*/
 		background-color: #424242;
 		max-width: 860px;
 	}
-	#container2{
+	#container2,#container3,#container4{
 		display: none;
 		position: relative;
 		margin: 3.2em 1em 1em 1em;
 		padding: 1em;
-		//border-radius: 2em;
+		/*border-radius: 2em;*/
 		background-color: #424242;
 		max-width: 860px;
 	}
 	#logo{
 		display: inline-block;
-		border-right: 0.5em solid #323232; 
+		border-right: 0.5em solid #282828;
+		padding-bottom: 0.1em;
 		width: 5em;
 	}
 	#audio_file{
@@ -72,14 +73,13 @@
 	}
 	.menuElement{
 		background-color: #232323;
-		border-right: 0.1em solid #323232; 
+		border-right: 0.2em solid #282828; 
 		display: inline-block;
 		padding: 0 1em;
-		line-height:2em;
 	}
 	.menuElement:hover{
 		cursor: pointer;
-		background-color: #292929;
+		background-color: #181818;
 	}
 	.menuSelected{
 		color: #709070;
@@ -92,7 +92,7 @@
 		padding-left: 1em;
 		position: fixed;
 		width: 100%; 
-		height: 1.6em; 
+		/*height: 1.6em;*/
 		line-height:1.6em;
 		display: inline-block;
 	}	
@@ -123,6 +123,24 @@
 		height: 10em;
 		margin: 2em;
 	}	
+	.record_button{
+		background-color: #aa4242;
+		width: 4em;
+		height: 4em;
+		margin: 0 .5em;
+		border-radius: 100%;
+	}
+	.record_button[disabled]{
+		background-color: #525252;
+	}
+	.cancel_record_button{
+		width: 4em;
+		height: 4em;
+		margin: 0 .5em;
+	}	
+	.cancel_record_button[disabled]{
+		background-color: #525252;
+	}
 	.play_button[disabled]{
 		background-color: #525252;
 	}	
@@ -205,6 +223,7 @@
 	}	
 </style>
 <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="lib/web-audio-recorder-js/WebAudioRecorder.min.js"></script>
 <script>	
 	$(document).ready(function(){
 		var source=null;
@@ -219,9 +238,17 @@
 		var inputStreamSource = null;
 		var source = audioCtx.createBufferSource();
 		var convolver = audioCtx.createConvolver();
-		var processorBufferSize=2048;//16384
+		var processorBufferSize=4096;//16384
 		var scriptNode = audioCtx.createScriptProcessor(processorBufferSize);
 		var bufferSecundario = [new Float32Array(processorBufferSize),new Float32Array(processorBufferSize)];
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
+		// pq dois buffers dentro do buffer sedcundário? facilitaria apenas um append................
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
 		var inputData = new Float32Array(processorBufferSize);
 		var audioBuffer= null;
 		var masterGain = audioCtx.createGain();
@@ -232,23 +259,38 @@
 		var textCoeficients = document.getElementById("textCoeficients");
 		analyser.getByteTimeDomainData(dataArray);
 		masterGain.gain.value=0.3;
+		var configs={
+						workerDir: "lib/web-audio-recorder-js/",
+						numChannels: 2
+					}	
+		var recorder = new WebAudioRecorder(masterGain, configs);
 
 		var canvasWave = document.getElementById("oscilloscope");
 		var canvasImpulse = document.getElementById("graphImpulse");
 		var container1 = document.getElementById("container1");
-		var container2 = document.getElementById("container1");
+		var container2 = document.getElementById("container2");
+		var container3 = document.getElementById("container3");
+		var container4 = document.getElementById("container4");
 		var canvasCtxWave = canvasWave.getContext("2d");
 		var canvasCtxImpulse = canvasImpulse.getContext("2d");
+
+		var nodeQueue = null;
 		
 		var processingTime = null;
-		
+
 		var sourceOption = null;
+
+		var playing = false;
 		
 		function resize_canvas(){
-			canvasWave.width  = container1.clientWidth*.97;
+			canvasWave.width = Math.round(container1.clientWidth*.97);
+			console.log(container1);
+			console.log(canvasWave.width);
 			canvasWave.height = 100;
-			canvasImpulse.width  = container1.clientWidth*.97;
-			canvasImpulse.height = 100;
+			canvasImpulse.width = Math.round(container2.clientWidth*.97);
+			canvasImpulse.height = 100;	
+			drawWave();
+			drawCoeficients();		
 		}
 		
 		 $(window).on('resize', function() {
@@ -257,11 +299,11 @@
 		
 		function drawWave() {			
 			drawVisual = requestAnimationFrame(drawWave);
+			canvasCtxWave.lineWidth = 1;
+			canvasCtxWave.fillStyle = '#424242';
+			canvasCtxWave.fillRect(0, 0, canvasWave.width, canvasWave.height);	
 			if(visual_type=='t'){
-				analyser.getByteTimeDomainData(dataArray);
-				canvasCtxWave.fillStyle = '#424242';
-				canvasCtxWave.fillRect(0, 0, canvasWave.width, canvasWave.height);
-				canvasCtxWave.lineWidth = 1;
+				analyser.getByteTimeDomainData(dataArray);							
 				canvasCtxWave.strokeStyle = '#aaa';
 				canvasCtxWave.beginPath();
 				var sliceWidth = canvasWave.width * 1.0 / bufferLength;
@@ -279,10 +321,7 @@
 				canvasCtxWave.stroke();
 			}
 			else{
-				analyser.getByteFrequencyData(dataArray);
-				canvasCtxWave.fillStyle = '#424242';
-				canvasCtxWave.fillRect(0, 0, canvasWave.width, canvasWave.height);
-				canvasCtxWave.lineWidth = 1;
+				analyser.getByteFrequencyData(dataArray);							
 				canvasCtxWave.strokeStyle = '#aaa';
 				canvasCtxWave.beginPath();
 				var sliceWidth = canvasWave.width * 1.0 / bufferLength;
@@ -300,10 +339,48 @@
 				canvasCtxWave.stroke();
 			}			
 		};
+
+		function drawCoeficients(){	
+			var impulseMax=getMaxOfArray(coeficients);
+			var impulseMin=getMinOfArray(coeficients);
+			var impulseYMax=Math.max(impulseMax,Math.abs(impulseMin));
+			canvasCtxImpulse.fillStyle = '#424242';
+			canvasCtxImpulse.fillRect(0, 0, canvasImpulse.width, canvasImpulse.height);
+			canvasCtxImpulse.lineWidth = 1;
+			canvasCtxImpulse.strokeStyle = '#222';
+			canvasCtxImpulse.beginPath();
+			canvasCtxImpulse.moveTo(0, canvasImpulse.height/2+1);
+			canvasCtxImpulse.lineTo(canvasImpulse.width, canvasImpulse.height/2+1);
+			canvasCtxImpulse.stroke();
+			canvasCtxImpulse.strokeStyle = '#aaa';
+			canvasCtxImpulse.beginPath();
+			var sliceWidth = canvasImpulse.width * 1.0 / coeficientsLength;			
+			var x = 0;
+			for (var i = 0; i < coeficientsLength; i++) {
+				var y = canvasImpulse.height - Math.abs(coeficients[i]/impulseYMax+1)*canvasImpulse.height/2.1;
+				if (i === 0) {
+					canvasCtxImpulse.moveTo(x, y);
+				} else {
+					canvasCtxImpulse.lineTo(x, y);
+				}
+				x += sliceWidth;
+			}
+			canvasCtxImpulse.stroke();
+		}
 		
 		function drawInfo() {			
-			drawVisual = requestAnimationFrame(drawInfo);				
+			drawVisual = requestAnimationFrame(drawInfo);
+			////////////////////////////////////////////////////////////////////////////////////////////////////
+			////////////////////////////////////////////////////////////////////////////////////////////////////
+			////////////////////////////////////////////////////////////////////////////////////////////////////
+			////////////////////////////////////////////////////////////////////////////////////////////////////
+			////////////////////////////////////////////////////////////////////////////////////////////////////
+			////////////////////////////////////////////////////////////////////////////////////////////////////
+			////////////////////////////////////////////////////////////////////////////////////////////////////
+			////////////////////////////////////////////////////////////////////////////////////////////////////				
 		};
+
+
 		
 		resize_canvas();
 		drawWave();		
@@ -326,19 +403,19 @@
 							processando += inputData[(sample+index)-coeficients.length]*coeficients[index];				
 						}
 					}
-					//console.log(sample+index);
 					outputData[sample]=processando;		
 				}
 				bufferSecundario[channel]=inputData;
 			}	
 			var dOut = new Date();
 			var timeOut=dOut.getTime() - timeIn;
-			console.log(timeOut);		
+			//console.log(timeOut);		
 		}		
 		
 		var coeficients = new Float32Array([-4.61221813409777e-07,-3.64700036646293e-07,-5.86018381358106e-07,-8.83837671258784e-07,-1.27144219510340e-06,-1.76207594777872e-06,-2.36838674226705e-06,-3.10176667051084e-06,-3.97159119894647e-06,-4.98436287284348e-06,-6.14276967159529e-06,-7.44467243345447e-06,-8.88204036355284e-06,-1.04398583466168e-05,-1.20950344825225e-05,-1.38153408111398e-05,-1.55584244430049e-05,-1.72709301051700e-05,-1.88877782822445e-05,-2.03316455144564e-05,-2.15126948434034e-05,-2.23286047152337e-05,-2.26649437158585e-05,-2.23959361965040e-05,-2.13856600461725e-05,-1.94897125038024e-05,-1.65573729329209e-05,-1.24342828979679e-05,-6.96565371732195e-06,2.90510579063578e-20,8.60661537667441e-06,1.89858536532914e-05,3.12519340018792e-05,4.54960888232423e-05,6.17807170069518e-05,8.01333281392789e-05,0.000100540386855004,0.000122941182035277,0.000147221859925730,0.000173209773044306,0.000200668307521005,0.000229292359823256,0.000258704639250128,0.000288452974734682,0.000318008803025633,0.000346767009928412,0.000374047286735914,0.000399097150107954,0.000421096755385477,0.000439165610660744,0.000452371271974843,0.000459740068986824,0.000460269875666469,0.000452944902421480,0.000436752445098166,0.000410701483109365,0.000373842974252016,0.000325291648369356,0.000264249056748890,0.000190027589943309,0.000102075134513563,-2.72490215764211e-19,-0.000116404287789644,-0.000247134761363565,-0.000391955812600425,-0.000550377496556929,-0.000721635824479785,-0.000904675534450830,-0.00109813582132228,-0.00130033949166174,-0.00150928598406428,-0.00172264866031244,-0.00193777672856664,-0.00215170210632835,-0.00236115146880895,-0.00256256365822339,-0.00275211255226110,-0.00292573540659972,-0.00307916659801957,-0.00320797660279821,-0.00330761595109749,-0.00337346380358864,-0.00340088070326541,-0.00338526496499103,-0.00332211207955560,-0.00320707642961284,-0.00303603454350207,-0.00280514905124045,-0.00251093245637810,-0.00215030979927871,-0.00172067926287830,-0.00121996976203360,-0.000646694562916047,8.52635256252286e-19,0.000720291604772966,0.00151364566318813,0.00237878645649018,0.00331367637667902,0.00431550386739363,0.00538068054879504,0.00650484789012477,0.00768289366348807,0.00890897827483502,0.0101765709252102,0.0114784954093798,0.0128069852123024,0.0141537474190173,0.0155100348128573,0.0168667254028646,0.0182144084962895,0.0195434763183103,0.0208442200807393,0.0221069293163548,0.0233219932272867,0.0244800027459678,0.0255718519766262,0.0265888376749057,0.0275227554333770,0.0283659912715117,0.0291116073798512,0.0297534208389613,0.0302860742233365,0.0307050971073831,0.0310069576133335,0.0311891032775162,0.0312499906596634,0.0311891032775162,0.0310069576133335,0.0307050971073831,0.0302860742233365,0.0297534208389613,0.0291116073798512,0.0283659912715117,0.0275227554333770,0.0265888376749057,0.0255718519766262,0.0244800027459678,0.0233219932272867,0.0221069293163548,0.0208442200807393,0.0195434763183103,0.0182144084962895,0.0168667254028646,0.0155100348128573,0.0141537474190173,0.0128069852123024,0.0114784954093798,0.0101765709252102,0.00890897827483502,0.00768289366348807,0.00650484789012477,0.00538068054879504,0.00431550386739363,0.00331367637667902,0.00237878645649018,0.00151364566318813,0.000720291604772966,8.52635256252286e-19,-0.000646694562916047,-0.00121996976203360,-0.00172067926287830,-0.00215030979927871,-0.00251093245637810,-0.00280514905124045,-0.00303603454350207,-0.00320707642961284,-0.00332211207955560,-0.00338526496499103,-0.00340088070326541,-0.00337346380358864,-0.00330761595109749,-0.00320797660279821,-0.00307916659801957,-0.00292573540659972,-0.00275211255226110,-0.00256256365822339,-0.00236115146880895,-0.00215170210632835,-0.00193777672856664,-0.00172264866031244,-0.00150928598406428,-0.00130033949166174,-0.00109813582132228,-0.000904675534450830,-0.000721635824479785,-0.000550377496556929,-0.000391955812600425,-0.000247134761363565,-0.000116404287789644,-2.72490215764211e-19,0.000102075134513563,0.000190027589943309,0.000264249056748890,0.000325291648369356,0.000373842974252016,0.000410701483109365,0.000436752445098166,0.000452944902421480,0.000460269875666469,0.000459740068986824,0.000452371271974843,0.000439165610660744,0.000421096755385477,0.000399097150107954,0.000374047286735914,0.000346767009928412,0.000318008803025633,0.000288452974734682,0.000258704639250128,0.000229292359823256,0.000200668307521005,0.000173209773044306,0.000147221859925730,0.000122941182035277,0.000100540386855004,8.01333281392789e-05,6.17807170069518e-05,4.54960888232423e-05,3.12519340018792e-05,1.89858536532914e-05,8.60661537667441e-06,2.90510579063578e-20,-6.96565371732195e-06,-1.24342828979679e-05,-1.65573729329209e-05,-1.94897125038024e-05,-2.13856600461725e-05,-2.23959361965040e-05,-2.26649437158585e-05,-2.23286047152337e-05,-2.15126948434034e-05,-2.03316455144564e-05,-1.88877782822445e-05,-1.72709301051700e-05,-1.55584244430049e-05,-1.38153408111398e-05,-1.20950344825225e-05,-1.04398583466168e-05,-8.88204036355284e-06,-7.44467243345447e-06,-6.14276967159529e-06,-4.98436287284348e-06,-3.97159119894647e-06,-3.10176667051084e-06,-2.36838674226705e-06,-1.76207594777872e-06,-1.27144219510340e-06,-8.83837671258784e-07,-5.86018381358106e-07,-3.64700036646293e-07,-4.61221813409777e-07]);
 		
 		textCoeficients.value = coeficients;
+		var coeficientsLength = coeficients.length;
 		getCoeficients();		
 		
 		$("#load_file").click(
@@ -355,7 +432,10 @@
 				reader.onloadend = function(event) {
 					loaded=true;
 					sourceOption="file";
-					$("#play").removeAttr("disabled");
+					if(!playing){
+						$("#play").removeAttr("disabled");
+						disconnectAll();
+					}
 					$("#stop").removeAttr("disabled");
 					modal.style.display = "none";
 					decodingModal.style.display = "block";
@@ -371,19 +451,55 @@
 		
 		$("#load_input").click(
 			function(){
-				navigator.getUserMedia = ( navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);;
-				navigator.getUserMedia(
-					{ audio: {"mandatory": {"googEchoCancellation": "false","googAutoGainControl": "false","googNoiseSuppression": "false","googHighpassFilter": "false"},"optional": []}, video: false }, 
-					function (mediaStream) {
+				if (navigator.webkitGetUserMedia !== undefined) {
+				    constraint = {
+				        video: false,
+				        audio: {
+				            optional: [
+				                {googAutoGainControl: false},
+				                {googAutoGainControl2: false},
+				                {echoCancellation: false},
+				                {googEchoCancellation: false},
+				                {googEchoCancellation2: false},
+				                {googDAEchoCancellation: false},
+				                {googNoiseSuppression: false},
+				                {googNoiseSuppression2: false},
+				                {googHighpassFilter: false},
+				                {googTypingNoiseDetection: false},
+				                {googAudioMirroring: false}
+				            ]
+				        }
+				    }
+				}
+				else if (navigator.mozGetUserMedia !== undefined) {
+				    constraint = {
+				        video: false,
+				        audio: {
+				            echoCancellation: false,
+				            mozAutoGainControl: false
+				            //mozNoiseSuppression: false
+				        }
+				    }
+
+				}
+				else {
+				    constraint = {
+				        video: false,
+				        audio: {
+				            echoCancellation: false
+				        }
+				    }
+				}
+				navigator.mediaDevices.getUserMedia(constraint).then(function(stream) {
 						sourceOption = "input";
-						inputStreamSource = audioCtx.createMediaStreamSource(mediaStream);
-						$("#play").removeAttr("disabled");
-						$("#stop").removeAttr("disabled");
-					}, 
-					function (error) {
-						window.alert("There was an error when getting microphone input: " + error);
-					}
-				);
+						inputStreamSource = audioCtx.createMediaStreamSource(stream);
+						if(!playing){
+							$("#play").removeAttr("disabled");
+							disconnectAll();
+						}						
+					}).catch(function(err) {
+						window.alert("Ocorreu um erro ao obter a entrada de áudio: " + err);
+				});
 			}
 		);
 		
@@ -396,7 +512,10 @@
 							  return;
 						}
 						else{
+							playing = true;
 							$("#play").attr("disabled","disabled");
+							$("#record").removeAttr("disabled");
+							$("#stop").removeAttr("disabled");
 							source = audioCtx.createBufferSource();
 							source.buffer=audioBuffer;
 							if($("#power").prop("checked")){
@@ -414,7 +533,10 @@
 						}
 						break;
 					case "input":
+						playing=true;
 						$("#play").attr("disabled","disabled");
+						$("#record").removeAttr("disabled");
+						$("#stop").removeAttr("disabled");
 						source=inputStreamSource;
 						if($("#power").prop("checked")){
 							source.connect(scriptNode);	
@@ -436,12 +558,30 @@
 			function(){
 				disconnectAll();
 				$("#play").removeAttr("disabled");
+				$("#stop").attr("disabled","disabled");
+				playing=false;
 			}
 		);
 		$("#oscilloscope").click(function(){
 			if(visual_type=='t'){visual_type='f';}
 			else{visual_type='t';}			
 		});
+
+		$("#record").click(
+			function(){
+				if(recorder.isRecording()){
+					recorder.finishRecording();
+				}
+				else{
+					var configs={
+						workerDir: "lib/web-audio-recorder-js/",
+						numChannels: 2
+					}			
+					recorder = new WebAudioRecorder(masterGain, configs);
+					recorder.startRecording();
+				}
+			}
+		);
 		
 		function getMaxOfArray(numArray) {
 			return Math.max.apply(null, numArray);
@@ -457,33 +597,8 @@
 			for(var i=0;i<coeficientsLength;i++){
 				dataCoeficients[i]=parseFloat(rawCoeficients[i]);			
 			}
-			var impulseMax=getMaxOfArray(dataCoeficients);
-			var impulseMin=getMinOfArray(dataCoeficients);
-			var impulseYMax=Math.max(impulseMax,Math.abs(impulseMin));
-			coeficients=dataCoeficients;	
-			canvasCtxImpulse.fillStyle = '#424242';
-			canvasCtxImpulse.fillRect(0, 0, canvasImpulse.width, canvasImpulse.height);
-			canvasCtxImpulse.lineWidth = 1;
-			canvasCtxImpulse.strokeStyle = '#222';
-			canvasCtxImpulse.beginPath();
-			canvasCtxImpulse.moveTo(0, canvasImpulse.height/2+1);
-			canvasCtxImpulse.lineTo(canvasImpulse.width, canvasImpulse.height/2+1);
-			canvasCtxImpulse.stroke();
-			canvasCtxImpulse.strokeStyle = '#aaa';
-			canvasCtxImpulse.beginPath();
-			var sliceWidth = canvasImpulse.width * 1.0 / coeficientsLength;
-			
-			var x = 0;
-			for (var i = 0; i < coeficientsLength; i++) {
-				var y = canvasImpulse.height - Math.abs(dataCoeficients[i]/impulseYMax+1)*canvasImpulse.height/2.1;
-				if (i === 0) {
-					canvasCtxImpulse.moveTo(x, y);
-				} else {
-					canvasCtxImpulse.lineTo(x, y);
-				}
-				x += sliceWidth;
-			}
-			canvasCtxImpulse.stroke();
+			coeficients=dataCoeficients;
+			drawCoeficients();
 		}
 		
 		$("#getCoeficients").click(function(){
@@ -504,81 +619,127 @@
 		});
 		
 		$("#power").change(function(){
-			if($(this).prop("checked")){
-				disconnectAll();
-				source.connect(scriptNode);	
-				scriptNode.connect(analyser);
-				analyser.connect(masterGain);
-				masterGain.connect(audioCtx.destination);
-			}
-			else{
-				disconnectAll();
-				source.connect(analyser);					
-				analyser.connect(masterGain);
-				masterGain.connect(audioCtx.destination);				
+			if(playing){
+				if($(this).prop("checked")){
+					disconnectAll();
+					source.connect(scriptNode);	
+					scriptNode.connect(analyser);
+					analyser.connect(masterGain);
+					masterGain.connect(audioCtx.destination);
+				}
+				else{
+					disconnectAll();
+					source.connect(analyser);					
+					analyser.connect(masterGain);
+					masterGain.connect(audioCtx.destination);				
+				}
 			}
 		});
 		
 		$("#menuPlayer").click(function(){
 			$("#container1").show();
 			$("#container2").hide();
+			$("#container3").hide();
+			$("#container4").hide();
 			$("#menuPlayer").addClass("menuSelected");
 			$("#menuFilter").removeClass("menuSelected");
+			$("#menuConfig").removeClass("menuSelected");
+			$("#menuAbout").removeClass("menuSelected");
+			resize_canvas();
 		});
 		$("#menuFilter").click(function(){
 			$("#container1").hide();
 			$("#container2").show();
+			$("#container3").hide();
+			$("#container4").hide();
 			$("#menuPlayer").removeClass("menuSelected");
 			$("#menuFilter").addClass("menuSelected");
+			$("#menuConfig").removeClass("menuSelected");
+			$("#menuAbout").removeClass("menuSelected");
+			resize_canvas();
+		});
+		$("#menuConfig").click(function(){
+			$("#container1").hide();
+			$("#container2").hide();
+			$("#container3").show();
+			$("#container4").hide();
+			$("#menuPlayer").removeClass("menuSelected");
+			$("#menuFilter").removeClass("menuSelected");
+			$("#menuConfig").addClass("menuSelected");
+			$("#menuAbout").removeClass("menuSelected");
+		});
+		$("#menuAbout").click(function(){
+			$("#container1").hide();
+			$("#container2").hide();
+			$("#container3").hide();
+			$("#container4").show();
+			$("#menuPlayer").removeClass("menuSelected");
+			$("#menuFilter").removeClass("menuSelected");
+			$("#menuConfig").removeClass("menuSelected");
+			$("#menuAbout").addClass("menuSelected");
 		});
 	});
 </script>
 </head>
 <body>
-	<header><div id="logo">two.DSP</div><div id="menu"><a class="menuElement menuSelected" id="menuPlayer">Player</a><a class="menuElement" id="menuFilter">Filtro</a><canvas width="100" height="30" id="timeInfo"></canvas></div></header>
+	<header>
+	<div id="logo">two.DSP</div>
+		<div id="menu">
+			<a class="menuElement menuSelected" id="menuPlayer">Player</a>
+			<a class="menuElement" id="menuFilter">Filtro</a>
+			<a class="menuElement" id="menuConfig">Config</a>
+			<a class="menuElement" id="menuAbout">Sobre</a>
+			<canvas width="100" height="30" id="timeInfo"></canvas>
+		</div>
+	</header>
 	<br style="clear: both"/>
 	<div id="container0">
-	<div id="container1">
-	<div id="myModal" class="modal">
-		<div class="modal-content">
-			<center>
-				<p style="color: #232323;">Carregando o arquivo</p>
-			</center>
-	  </div>
-	</div>
-	<div id="decodingModal" class="modal">
-		<center>
+		<div id="container1">
+		<div id="myModal" class="modal">
 			<div class="modal-content">
-				<p style="color: #232323;">Decodificando o arquivo</p>
-			</div>
-		</center>
-	</div>
-	<div class="divider">
-		<input class="input_button" id="audio_file" type="file" accept="audio/*"/>
-		<button id="load_file">Carregar áudio</button>
-		<button id="load_input">Carregar entrada</button>
-	</div>
-	
-	<br style="clear: both"/>
-	<div class="divider">
-		<button class="play_button" id="play" disabled="disabled">PLAY</button>
-		<button class="stop_button" id="stop" disabled="disabled">STOP</button>
-	</div>
-	<br style="clear:both"/>
-	<div class="divider">	
-		<label class="switch" for="power">			
-			<input type="checkbox" id="power">			
-		  <div class="slider"></div>		  
-		</label>
-		<input id="vol-control" type="range" value="0.3" min="0" max="1" step="0.05"></input><br/>
-		<div style="display:table">
-			<div style="display:inline-block"><p class="label_text">Filtragem</p></div>
-			<div style="display:inline-block; margin-left: 2.5em;"><p id="volume_text" class="label_text">Volume: 30%</p></div>
+				<center>
+					<p style="color: #232323;">Carregando o arquivo</p>
+				</center>
+		  </div>
 		</div>
-	</div>
-	<br style="clear: both"/>	
-	<canvas id="oscilloscope"></canvas>	
-	</div>
+		<div id="decodingModal" class="modal">
+			<center>
+				<div class="modal-content">
+					<p style="color: #232323;">Decodificando o arquivo</p>
+				</div>
+			</center>
+		</div>
+		<div class="divider">
+			<input class="input_button" id="audio_file" type="file" accept="audio/*"/>
+			<button id="load_file">Carregar áudio</button>
+			<button id="load_input">Carregar entrada</button>
+			<div style=" display:inline-block; margin-left: 3em; padding-left: 3em; border-left: 1px solid #525252;">
+				<button class="record_button" id="record" disabled="disabled">Record</button>
+				<button class="cancel_record_button" id="cancel_recording" disabled="disabled">Cancel</button>
+			</div>
+		</div>	
+		<br style="clear: both"/>
+		<div class="divider">
+			<button class="play_button" id="play" disabled="disabled">PLAY</button>
+			<button class="stop_button" id="stop" disabled="disabled">STOP</button>
+		</div>
+		<br style="clear:both"/>
+		<div class="divider">
+			<div style="display:inline-block;">	
+				<label class="switch" for="power">			
+					<input type="checkbox" id="power">			
+				  <div class="slider"></div>		  
+				</label>
+				<input id="vol-control" type="range" value="0.3" min="0" max="1" step="0.05"></input><br/>
+				<div style="display:table">
+					<div style="display:inline-block"><p class="label_text">Filtragem</p></div>
+					<div style="display:inline-block; margin-left: 2.5em;"><p id="volume_text" class="label_text">Volume: 30%</p></div>
+				</div>
+			</div>
+		</div>	
+		<br style="clear: both"/>	
+		<canvas id="oscilloscope"></canvas>	
+		</div>
 		<div id="container2">
 			<p>Coeficientes separados por vírgula :</p>
 			<textarea id="textCoeficients" rows="20" cols="115" ></textarea>
@@ -586,6 +747,12 @@
 			<canvas id="graphImpulse"></canvas>
 			<br/>	
 			<button id="getCoeficients">Atualizar filtro</button>
+		</div>
+		<div id="container3">
+			<p>aqui vão as configurações</p>
+		</div>
+		<div id="container4">
+			<img src="./img/twoDSP.png" width=840/>
 		</div>
 	</div>
 	<br/>
