@@ -573,7 +573,9 @@
 				if(recorder.isRecording()){
 					recorder.onComplete = function(recorder, blob) {
 						//document.querySelector("audio").src = URL.createObjectURL(blob);
-						recorder.exportWAV(function(blob));
+						recorder.exportWAV(function(blob){
+							//the generated blob contains the wav file
+						});
 					}
 					recorder.finishRecording();
 				}
