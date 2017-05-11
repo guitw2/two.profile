@@ -261,9 +261,9 @@
 		masterGain.gain.value=0.3;
 		var dest = audioCtx.createMediaStreamDestination();
 		var configs={
-						workerDir: "lib/web-audio-recorder-js/",
-						numChannels: 2
-					}	
+			workerDir: "lib/web-audio-recorder-js/",
+			numChannels: 2
+		}	
 		var recorder = new WebAudioRecorder(masterGain, configs);
 
 		var canvasWave = document.getElementById("oscilloscope");
@@ -285,8 +285,6 @@
 		
 		function resize_canvas(){
 			canvasWave.width = Math.round(container1.clientWidth*.97);
-			console.log(container1);
-			console.log(canvasWave.width);
 			canvasWave.height = 100;
 			canvasImpulse.width = Math.round(container2.clientWidth*.97);
 			canvasImpulse.height = 100;	
@@ -572,10 +570,14 @@
 			function(){
 				if(recorder.isRecording()){
 					recorder.onComplete = function(recorder, blob) {
-						//document.querySelector("audio").src = URL.createObjectURL(blob);
-						recorder.exportWAV(function(blob){
-							//the generated blob contains the wav file
-						});
+						var download = document.createElement("a");
+    					document.body.appendChild(download);
+    					download.style = "display: none";
+					    url = window.URL.createObjectURL(blob);
+					    download.href = url;
+					    download.download = name;
+					    download.click();
+					    window.URL.revokeObjectURL(url);
 					}
 					recorder.finishRecording();
 				}
@@ -617,7 +619,6 @@
 			source.disconnect();
 			scriptNode.disconnect();
 			analyser.disconnect();
-			masterGain.disconnect();
 		}
 		
 		$("#vol-control").change(function(){
@@ -632,13 +633,11 @@
 					source.connect(scriptNode);	
 					scriptNode.connect(analyser);
 					analyser.connect(masterGain);
-					masterGain.connect(audioCtx.destination);
 				}
 				else{
 					disconnectAll();
 					source.connect(analyser);					
-					analyser.connect(masterGain);
-					masterGain.connect(audioCtx.destination);				
+					analyser.connect(masterGain);			
 				}
 			}
 		});
