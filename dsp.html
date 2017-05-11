@@ -84,13 +84,6 @@
 	.menuSelected{
 		color: #709070;
 	}
-	.blinkMe {
-  		animation: blinker 1s linear infinite;
-	}
-
-	@keyframes blinker {  
-  		50% { opacity: 0; }
-	}
 
 	header{
 		font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
@@ -142,6 +135,7 @@
 		background-color: #525252;
 	}
 	.cancel_record_button{
+		background-color: #ccc;
 		width: 4em;
 		height: 4em;
 		margin: 0 .5em;
@@ -575,7 +569,8 @@
 		$("#record").click(
 			function(){
 				if(recorder.isRecording()){
-					$("#record").removeClass('blinkMe');
+					$("#record").html("Record");
+					$("#cancel_recording").attr("disabled","disabled");
 					recorder.onComplete = function(recorder, blob) {
 						var download = document.createElement("a");
     					document.body.appendChild(download);
@@ -589,7 +584,8 @@
 					recorder.finishRecording();
 				}
 				else{
-					$("#record").addClass('blinkMe');
+					$("#cancel_recording").removeAttr("disabled");
+					$("#record").html("Save");
 					var configs={
 						workerDir: "lib/web-audio-recorder-js/",
 						numChannels: 2
@@ -598,6 +594,14 @@
 					recorder = new WebAudioRecorder(masterGain, configs);
 					recorder.startRecording();
 				}
+			}
+		);
+
+		$("#cancel_recording").click(
+			function(){
+				recorder.cancelRecording();
+				$("#cancel_recording").attr("disabled","disabled");
+				$("#record").html("Record");
 			}
 		);
 		
