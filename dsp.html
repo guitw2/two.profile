@@ -84,6 +84,14 @@
 	.menuSelected{
 		color: #709070;
 	}
+	.blinkMe {
+  		animation: blinker 1s linear infinite;
+	}
+
+	@keyframes blinker {  
+  		50% { opacity: 0; }
+	}
+
 	header{
 		font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
 		font-size:2.2em; 
@@ -378,8 +386,6 @@
 			////////////////////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////////////////////				
 		};
-
-
 		
 		resize_canvas();
 		drawWave();		
@@ -569,6 +575,7 @@
 		$("#record").click(
 			function(){
 				if(recorder.isRecording()){
+					$("#record").removeClass('blinkMe');
 					recorder.onComplete = function(recorder, blob) {
 						var download = document.createElement("a");
     					document.body.appendChild(download);
@@ -582,10 +589,12 @@
 					recorder.finishRecording();
 				}
 				else{
+					$("#record").addClass('blinkMe');
 					var configs={
 						workerDir: "lib/web-audio-recorder-js/",
 						numChannels: 2
-					}			
+					}	
+
 					recorder = new WebAudioRecorder(masterGain, configs);
 					recorder.startRecording();
 				}
