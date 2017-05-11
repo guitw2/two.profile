@@ -558,7 +558,9 @@
 				disconnectAll();
 				$("#play").removeAttr("disabled");
 				$("#stop").attr("disabled","disabled");
-				$("#record").attr("disabled","disabled");
+				if(!recorder.isRecording()){
+					$("#record").attr("disabled","disabled");
+				}
 				playing=false;
 			}
 		);
@@ -583,6 +585,9 @@
 					    window.URL.revokeObjectURL(url);
 					}
 					recorder.finishRecording();
+					if(!playing){
+						$("#record").attr("disabled","disabled");
+					}
 				}
 				else{
 					$("#cancel_recording").removeAttr("disabled");
