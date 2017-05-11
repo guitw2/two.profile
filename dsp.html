@@ -608,6 +608,9 @@
 				recorder.cancelRecording();
 				$("#cancel_recording").attr("disabled","disabled");
 				$("#record").html("Record");
+				if(!playing){
+					$("#record").attr("disabled","disabled");
+				}
 			}
 		);
 		
