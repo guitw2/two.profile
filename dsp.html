@@ -400,10 +400,11 @@
 				canvasCtxProc.fillText(timeOut+"ms",canvasProc.width-35,15);				
 				canvasCtxProc.strokeStyle = '#709070';
 				canvasCtxProc.beginPath();
-				procTimeArray[procTimeArraySize-1]=timeOut;
+				procTimeArray[procTimeArraySize-1]=timeOut*.75;
+				
 				var x = 1;
 				for (var i = 0; i < procTimeArraySize; i++) {
-					var y = canvasProc.height - procTimeArray[i]/2;
+					var y = canvasProc.height - procTimeArray[i]/3;
 					if (i === 0) {
 						canvasCtxProc.moveTo(x, y);
 					} else {
