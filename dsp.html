@@ -251,6 +251,9 @@
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
 		var inputData = new Float32Array(processorBufferSize);
 		var audioBuffer= null;
 		var masterGain = audioCtx.createGain();
@@ -267,6 +270,8 @@
 			numChannels: 2
 		}	
 		var recorder = new WebAudioRecorder(masterGain, configs);
+
+		var timeOut = 0;
 
 		var canvasWave = document.getElementById("oscilloscope");
 		var canvasImpulse = document.getElementById("graphImpulse");
@@ -368,19 +373,51 @@
 			}
 			canvasCtxImpulse.stroke();
 		}
-		
-		function drawInfo() {			
-			drawVisual = requestAnimationFrame(drawInfo);
-			////////////////////////////////////////////////////////////////////////////////////////////////////
-			////////////////////////////////////////////////////////////////////////////////////////////////////
-			////////////////////////////////////////////////////////////////////////////////////////////////////
-			////////////////////////////////////////////////////////////////////////////////////////////////////
-			////////////////////////////////////////////////////////////////////////////////////////////////////
-			////////////////////////////////////////////////////////////////////////////////////////////////////
-			////////////////////////////////////////////////////////////////////////////////////////////////////
-			////////////////////////////////////////////////////////////////////////////////////////////////////				
+
+		var canvasProc = document.getElementById("timeInfo");
+		var canvasCtxProc = canvasProc.getContext("2d");
+		var fps = 5;
+		var now;
+		var then = Date.now();
+		var interval = 1000/fps;
+		var delta;
+		var procTimeArraySize = 20;
+		var procTimeArray = new Array(procTimeArraySize);
+
+		function drawProcTime() {		
+			requestAnimationFrame(drawProcTime);			
+			var sliceWidth = canvasProc.width * 1.0 / procTimeArraySize;
+			now = Date.now();
+	    	delta = now - then;     
+	    	if (delta > interval){
+	    		then = now - (delta % interval);
+				canvasCtxProc.lineWidth = 1;
+				canvasCtxProc.fillStyle = '#232323';
+				canvasCtxProc.fillRect(0, 0, canvasProc.width, canvasProc.height);	
+				canvasCtxProc.fillStyle = "#aaa";	
+				canvasCtxProc.font = "14px Arial";
+				canvasCtxProc.fillText(timeOut+"ms",canvasProc.width-35,15);				
+				canvasCtxProc.strokeStyle = '#709070';
+				canvasCtxProc.beginPath();
+				procTimeArray[procTimeArraySize-1]=timeOut;
+				var x = 1;
+				for (var i = 0; i < procTimeArraySize; i++) {
+					var y = canvasProc.height - procTimeArray[i]/2;
+					if (i === 0) {
+						canvasCtxProc.moveTo(x, y);
+					} else {
+						canvasCtxProc.lineTo(x, y);
+					}
+					x += sliceWidth;
+				}
+				for (var i = 0; i < procTimeArraySize-1; i++) {
+					procTimeArray[i]=procTimeArray[i+1];
+				}
+				canvasCtxProc.stroke();	
+	    	} 					
 		};
-		
+
+		drawProcTime();		
 		resize_canvas();
 		drawWave();		
 		
@@ -396,7 +433,7 @@
 					processando=0;
 					for(var index=0; index < coeficients.length; index++){
 						if(sample+index<coeficients.length){
-							processando += bufferSecundario[channel][(sample+index)+(processorBufferSize-coeficients.length)]*coeficients[index];			
+							processando += bufferSecundario[channel][(sample+index)+(processorBufferSize-coeficients.length)]*coeficients[index];	
 						}
 						else{
 							processando += inputData[(sample+index)-coeficients.length]*coeficients[index];				
@@ -407,7 +444,7 @@
 				bufferSecundario[channel]=inputData;
 			}	
 			var dOut = new Date();
-			var timeOut=dOut.getTime() - timeIn;
+			timeOut=dOut.getTime() - timeIn;
 			//console.log(timeOut);		
 		}		
 		
@@ -659,7 +696,8 @@
 				else{
 					disconnectAll();
 					source.connect(analyser);					
-					analyser.connect(masterGain);			
+					analyser.connect(masterGain);	
+					timeOut=0;		
 				}
 			}
 		});
@@ -717,7 +755,7 @@
 			<a class="menuElement" id="menuFilter">Filtro</a>
 			<a class="menuElement" id="menuConfig">Config</a>
 			<a class="menuElement" id="menuAbout">Sobre</a>
-			<canvas width="100" height="30" id="timeInfo"></canvas>
+			<canvas width="100" height="25" id="timeInfo"></canvas>
 		</div>
 	</header>
 	<br style="clear: both"/>
