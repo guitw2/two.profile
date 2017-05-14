@@ -390,6 +390,7 @@
 			now = Date.now();
 	    	delta = now - then;     
 	    	if (delta > interval){
+	    		if(!playing){timeOut=0;}
 	    		then = now - (delta % interval);
 				canvasCtxProc.lineWidth = 1;
 				canvasCtxProc.fillStyle = '#232323';
