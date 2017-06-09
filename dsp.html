@@ -1,108 +1,113 @@
 
 <html>
-<meta charset="UTF-8">
-<head>
-<link rel="stylesheet" type="text/css" href="style.css">
-<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-<script src="lib/web-audio-recorder-js/WebAudioRecorder.min.js"></script>
-<script src="./lib/gpu.js"></script>  
-<script src="./lib/two.dsp.js"></script>
-</head>
-<body>
-	<header>
-	<div id="logo">two.DSP</div>
-		<div id="menu">
-			<a class="menuElement menuSelected" id="menuPlayer">Player</a>
-			<a class="menuElement" id="menuFilter">Filtro</a>
-			<a class="menuElement" id="menuConfig">Config</a>
-			<a class="menuElement" id="menuAbout">Sobre</a>
-			<canvas width="100" height="25" id="timeInfo"></canvas>
-		</div>
-	</header>
-	<br style="clear: both"/>
-	<div id="container0">
-		<div id="container1">
-			<div id="myModal" class="modal">
-				<div class="modal-content">
-					<center>
-						<p style="color: #232323;">Carregando o arquivo</p>
-					</center>
-			  </div>
+	<meta charset="UTF-8">
+	<head>
+		<title>Two.DSP</title>
+		<meta name="description" content="Simplified Digital Signal Processing tool">
+		<meta name="keywords" content="DSP,Signal,processing,two.dsp,guitwo">
+		<meta name="author" content="Guilherme Tworkowski">
+		<link rel="stylesheet" type="text/css" href="style.css">
+		<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+		<script src="lib/web-audio-recorder-js/WebAudioRecorder.min.js"></script>
+		<script src="./lib/gpu.js"></script>  
+		<script src="./lib/two.dsp.js"></script>
+	</head>
+	<body>
+		<header>
+		<div id="logo">two.DSP</div>
+			<div id="menu">
+				<a class="menuElement menuSelected" id="menuPlayer">Player</a>
+				<a class="menuElement" id="menuFilter">Filtro</a>
+				<a class="menuElement" id="menuConfig">Config</a>
+				<a class="menuElement" id="menuAbout">Sobre</a>
+				<canvas width="100" height="25" id="timeInfo"></canvas>
 			</div>
-			<div id="decodingModal" class="modal">
-				<center>
+		</header>
+		<br style="clear: both"/>
+		<div id="container0">
+			<div id="container1">
+				<div id="myModal" class="modal">
 					<div class="modal-content">
-						<p style="color: #232323;">Decodificando o arquivo</p>
-					</div>
-				</center>
-			</div>
-			<div class="divider">
-				<input class="input_button" id="audio_file" type="file" accept="audio/*"/>
-				<button id="load_file">Carregar áudio</button>
-				<button id="load_input">Carregar entrada</button>
-				<div style=" display:inline-block; margin-left: 3em; padding-left: 3em; border-left: 1px solid #525252;">
-					<button class="record_button" id="record" disabled="disabled">Record</button>
-					<button class="cancel_record_button" id="cancel_recording" disabled="disabled">Cancel</button>
+						<center>
+							<p style="color: #232323;">Carregando o arquivo</p>
+						</center>
+				  </div>
 				</div>
-			</div>	
-			<br style="clear: both"/>
-			<div class="divider">
-				<button class="play_button" id="play" disabled="disabled">PLAY</button>
-				<button class="stop_button" id="stop" disabled="disabled">STOP</button>
+				<div id="decodingModal" class="modal">
+					<center>
+						<div class="modal-content">
+							<p style="color: #232323;">Decodificando o arquivo</p>
+						</div>
+					</center>
+				</div>
+				<div class="divider">
+					<input class="input_button" id="audio_file" type="file" accept="audio/*"/>
+					<button id="load_file">Carregar áudio</button>
+					<button id="load_input">Carregar entrada</button>
+					<div style=" display:inline-block; margin-left: 3em; padding-left: 3em; border-left: 1px solid #525252;">
+						<button class="record_button" id="record" disabled="disabled">Record</button>
+						<button class="cancel_record_button" id="cancel_recording" disabled="disabled">Cancel</button>
+					</div>
+				</div>	
+				<br style="clear: both"/>
+				<div class="divider">
+					<button class="play_button" id="play" disabled="disabled">PLAY</button>
+					<button class="stop_button" id="stop" disabled="disabled">STOP</button>
+				</div>
+				<br style="clear:both"/>
+				<div class="divider">
+					<div style="display:inline-block;">	
+						<label class="switch" for="power">			
+						<input type="checkbox" id="power">			
+							<div class="slider"></div>		  
+						</label>
+						<input id="vol-control" type="range" value="0.3" min="0" max="1" step="0.05"></input><br/>
+						<div style="display:table">
+							<div style="display:inline-block"><p class="label_text">Filtragem</p></div>
+							<div style="display:inline-block; margin-left: 2.5em;"><p id="volume_text" class="label_text">Volume: 30%</p></div>
+						</div>
+					</div>
+				</div>	
+				<br style="clear: both"/>	
+				<canvas id="oscilloscope"></canvas>	
 			</div>
-			<br style="clear:both"/>
-			<div class="divider">
-				<div style="display:inline-block;">	
-					<label class="switch" for="power">			
-					<input type="checkbox" id="power">			
-						<div class="slider"></div>		  
+			<div id="container2">
+				<p>Coeficientes separados por vírgula :</p>
+				<textarea id="textCoeficients" rows="20" cols="115" ></textarea>
+				<br style="clear: both"/>	
+				<canvas id="graphImpulse"></canvas>
+				<br/>	
+				<button id="getCoeficients">Atualizar filtro</button>
+			</div>
+			<div id="container3">
+				<h1>Em desenvolvimento</h1>
+				<div class="divider">
+					<label class="label_text super">Simulador de downsampling </label>	
+					<label class="switch" for="downSampling">			
+						<input type="checkbox" id="downSampling">			
+						<div class="slider"></div>					  
 					</label>
-					<input id="vol-control" type="range" value="0.3" min="0" max="1" step="0.05"></input><br/>
-					<div style="display:table">
-						<div style="display:inline-block"><p class="label_text">Filtragem</p></div>
-						<div style="display:inline-block; margin-left: 2.5em;"><p id="volume_text" class="label_text">Volume: 30%</p></div>
+				</div>
+				<div class="divider">
+					<label class="label_text super">Unidade de processamento </label>
+					<div class="procMethod">
+						<select>
+						 	<option class="procMethod" value="procCpu">CPU</option>
+							<option class="procMethod" value="procGPU">GPU</option>
+						</select>
 					</div>
 				</div>
-			</div>	
-			<br style="clear: both"/>	
-			<canvas id="oscilloscope"></canvas>	
-		</div>
-		<div id="container2">
-			<p>Coeficientes separados por vírgula :</p>
-			<textarea id="textCoeficients" rows="20" cols="115" ></textarea>
-			<br style="clear: both"/>	
-			<canvas id="graphImpulse"></canvas>
-			<br/>	
-			<button id="getCoeficients">Atualizar filtro</button>
-		</div>
-		<div id="container3">
-			<div class="divider">
-				<label class="label_text super">Simulador de downsampling </label>	
-				<label class="switch" for="downSampling">			
-					<input type="checkbox" id="downSampling">			
-					<div class="slider"></div>					  
-				</label>
 			</div>
-			<div class="divider">
-				<label class="label_text super">Unidade de processamento </label>
-				<div class="procMethod">
-					<select>
-					 	<option class="procMethod" value="procCpu">CPU</option>
-						<option class="procMethod" value="procGPU">GPU</option>
-					</select>
-				</div>
+			<div id="container4">
+				<center><img src="./img/twoDSP.png" width=640/></center>
+				<p>Two.DSP é um projeto em desenvolvimento por <a href="http://guitwo.com/">Guilherme tworkowski</a> como trabalho de conclusão do curso de Engenharia da Computação.</p>
+				<p>Seu principal objetivo é servir de apoio às disciplinas de DSP.</p>
+				<p>Veja também no github: <a href="http://github.com/guitw2/two.dsp/">github.com/guitw2/two.dsp</a>
 			</div>
 		</div>
-		<div id="container4">
-			<center><img src="./img/twoDSP.png" width=640/></center>
-			<p>Two.DSP é um projeto em desenvolvimento por Guilherme Tworkowski <a href="http://guitwo.com/">guitwo.com</a> como trabalho de conclusão do curso de Engenharia da Computação.</p>
-			<p>Seu principal objetivo de servir de apoio às disciplinas de DSP.</p>
-			<p>Veja também no github: <a href="http://github.com/guitw2/two.dsp/">github.com/guitw2/two.dsp</a>
-		</div>
-	</div>
-	<br/>
-	<footer>
-	  <p>Guilherme Tworkowski | <a href="mailto:guitw2@gmail.com">guitw2@gmail.com</a></p>
-	</footer>
-</body>
+		<br/>
+		<footer>
+		  <p>Guilherme Tworkowski | <a href="mailto:guitw2@gmail.com">guitw2@gmail.com</a></p>
+		</footer>
+	</body>
 </html>
