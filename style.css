@@ -1,0 +1,257 @@
+
+body {
+	font-family: "lucida grande","Segoe UI",Arial, sans-serif; 
+	background-color: #282828;
+	/*background-image: url("./body-bg.png");*/
+	font-size: 14px;
+	padding:0;
+	margin:0;
+}
+.divider{
+	margin: 0.75em 1.5em;
+	width: 100%;
+	display:inline-block;
+}	
+#container0{
+	display: table;
+	margin: auto;
+}
+#container1{
+	position: relative;
+	margin: 3.2em 1em 1em 1em;
+	padding: 1em;
+	/*border-radius: 2em;*/
+	background-color: #424242;
+	max-width: 860px;
+}
+#container2,#container3,#container4{
+	display: none;
+	position: relative;
+	margin: 3.2em 1em 1em 1em;
+	padding: 1em;
+	/*border-radius: 2em;*/
+	background-color: #424242;
+	max-width: 860px;
+	float: left;
+}
+#logo{
+	display: inline-block;
+	border-right: 0.5em solid #282828;
+	padding-bottom: 0.1em;
+	width: 5em;
+}
+#audio_file{
+	background-color: inherit;
+	border: 1px solid #aaa; 
+	padding: 0.2em;
+	width: 23em;
+}
+#load_file{
+	height: 2em;
+}
+#load_input{
+	height: 2em;
+}
+#getCoeficients{
+	height: 2em;
+}
+#textCoeficients{
+	background-color: #aaa;
+	resize: none;
+	outline: 0;
+}
+#menu{
+	font-size: 0.75em;
+	display: inline-block;
+	color: #424242;
+}
+#timeInfo{
+	display: inline;
+}
+.menuElement{
+	background-color: #232323;
+	border-right: 0.2em solid #282828; 
+	display: inline-block;
+	padding: 0 1em;
+}
+.menuElement:hover{
+	cursor: pointer;
+	background-color: #181818;
+}
+.menuSelected{
+	color: #709070;
+}
+
+header{
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
+	font-size:2.2em; 
+	background-color: #232323; 
+	color: #fff; 
+	padding-left: 1em;
+	position: fixed;
+	width: 100%; 
+	/*height: 1.6em;*/
+	line-height:1.6em;
+	display: inline-block;
+}	
+footer{
+	margin: 0 1em;
+	color: #aaa;
+	position:static;
+	bottom:0;
+}	
+a{
+	color: #ccc;
+}
+p{
+	color: #aaa;
+}
+.label_text{
+	color: #aaa;
+	margin: 0;
+}
+.super{
+	vertical-align: super;
+}
+button{
+	background-color: #ccc;
+	color: #424242;
+	outline: 0;
+	border: none;
+}
+.play_button{
+	width: 25em;
+	height: 10em;
+	margin: 2em;
+}	
+.record_button{
+	background-color: #aa4242;
+	width: 4em;
+	height: 4em;
+	margin: 0 .5em;
+	border-radius: 100%;
+}
+.record_button[disabled]{
+	background-color: #525252;
+}
+.cancel_record_button{
+	background-color: #ccc;
+	width: 4em;
+	height: 4em;
+	margin: 0 .5em;
+}	
+.cancel_record_button[disabled]{
+	background-color: #525252;
+}
+.play_button[disabled]{
+	background-color: #525252;
+}	
+.stop_button{
+	width: 25em;
+	height: 10em;
+	margin: 2em;
+	color: #aa4242;
+}	
+.stop_button[disabled]{
+	background-color: #525252;
+	color: #424242;
+}	
+#vol-control{
+	margin: 1em;
+}
+input[type=file]{
+	decoration: none;
+	border: 1px;
+	border-color: #aaa;
+	background-color: #FFFFFF;
+	color: #aaa;
+	outline: 0;
+	position: relative;
+	padding: auto;
+}
+.modal {
+	display: none;
+	position: absolute;
+	z-index: 1;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height:100%;
+	overflow: auto;
+	background-color: #232323;
+}
+.modal-content {
+	color: #424242;
+	background-color: #ccc;
+	margin: 15% auto;
+	padding: 1em;
+	align: center;
+}	
+.switch {
+	position: relative;
+	display: inline-block;
+	width: 60px;
+	height: 34px;
+}
+.switch input {display:none;}
+.slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #707070;
+}
+.slider:before {
+	position: absolute;
+	content: "";
+	height: 26px;
+	width: 26px;
+	left: 4px;
+	bottom: 4px;
+	background-color: #ddd;
+}
+
+.procMethod {
+	cursor: pointer;
+	display:inline-block;
+    border: none;
+    outline: none;
+    width: 100px;
+    overflow: hidden;
+    background-color: #707070;
+    color: #aaa;
+}
+
+.procMethod select {
+    padding: 5px 8px;
+    color: #aaa;
+    width: 100px;
+    border: none;
+    box-shadow: none;
+    background: #707070;
+}
+
+.procMethod select:hover {
+	text-decoration: none;
+    outline: none;
+    color: #aaa;
+    background: #707070;
+}
+
+.procMethod select:focus {
+    outline: none;
+}
+
+input:checked + .slider {
+	background-color: #709070;
+}
+input:focus + .slider {
+	box-shadow: 0 0 1px #3bc375;
+}
+input:checked + .slider:before {
+	-webkit-transform: translateX(26px);
+	-ms-transform: translateX(26px);
+	transform: translateX(26px);
+}
