@@ -9,14 +9,16 @@
 		<link rel="stylesheet" type="text/css" href="style.css">
 		<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 		<script src="lib/web-audio-recorder-js/WebAudioRecorder.min.js"></script>
-		<script src="./lib/two.dsp.js"></script>
+		<script src="lib/gpu.js"></script>  
+		<script src="lib/two.dsp.js"></script>
+		<script src="lib/dsp.js/dsp.js"></script>
 	</head>
 	<body>
 		<header>
 		<div id="logo">two.DSP</div>
 			<div id="menu">
 				<a class="menuElement menuSelected" id="menuPlayer">Player</a>
-				<a class="menuElement" id="menuFilter">Filtro</a>
+				<a class="menuElement" id="menuFilter">DSP</a>
 				<a class="menuElement" id="menuConfig">Config</a>
 				<a class="menuElement" id="menuAbout">Sobre</a>
 				<canvas width="100" height="25" id="timeInfo"></canvas>
@@ -62,8 +64,8 @@
 						</label>
 						<input id="vol-control" type="range" value="0.3" min="0" max="1" step="0.05"></input><br/>
 						<div style="display:table">
-							<div style="display:inline-block"><p class="label_text">Filtragem</p></div>
-							<div style="display:inline-block; margin-left: 2.5em;"><p id="volume_text" class="label_text">Volume: 30%</p></div>
+							<div style="display:inline-block"><p class="label_text">DSP</p></div>
+							<div style="display:inline-block; margin-left: 3.5em;"><p id="volume_text" class="label_text">Volume: 30%</p></div>
 						</div>
 					</div>
 				</div>	
@@ -71,12 +73,31 @@
 				<canvas id="oscilloscope"></canvas>	
 			</div>
 			<div id="container2">
-				<p>Coeficientes separados por vírgula :</p>
-				<textarea id="textCoeficients" rows="20" cols="115" ></textarea>
+				<label class="label_text super">Selecione o filtro ativo</label>
+				<div class="selectGreen">
+					<select id="selectFilter">
+					 	<option class="selectGreen" value="selectFIR">FIR</option>
+						<option class="selectGreen" value="selectCustom">Programável</option>
+					</select>
+				</div>
 				<br style="clear: both"/>	
-				<canvas id="graphImpulse"></canvas>
-				<br/>	
-				<button id="getCoeficients">Atualizar filtro</button>
+				<div class="dLine"></div>	
+				<button id="firLbl" class="basicButton">Filtro FIR [esconder]</button>
+				<div id="firCoef" class="dspSection">
+					<p>Coeficientes separados por vírgula :</p>
+					<textarea id="textCoeficients" class="basicTextarea"></textarea>
+					<br style="clear: both"/>	
+					<canvas id="graphImpulse"></canvas>
+					<br/>	
+					<button id="getCoeficients" class="basicButton">Atualizar filtro</button>
+				</div>
+				<div class="dLine"></div>
+				<button id="customLbl" class="basicButton">Filtro programável [mostrar]</button>
+				<div id="customFilter" class="dspSection">
+					<textarea id="customEditor" class="basicTextarea"></textarea>
+					<br/>
+					<button id="customGET" class="basicButton" style="margin-top: 5px;">Atualizar filtro</button>
+				</div>
 			</div>
 			<div id="container3">
 				<h1>Em desenvolvimento</h1>
@@ -89,10 +110,10 @@
 				</div>
 				<div class="divider">
 					<label class="label_text super">Unidade de processamento </label>
-					<div class="procMethod">
+					<div class="selectGreen">
 						<select>
-						 	<option class="procMethod" value="procCpu">CPU</option>
-							<option class="procMethod" value="procGPU">GPU</option>
+						 	<option class="selectGreen" value="procCpu">CPU</option>
+							<option class="selectGreen" value="procGPU">GPU</option>
 						</select>
 					</div>
 				</div>
