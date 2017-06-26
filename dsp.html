@@ -17,7 +17,7 @@
 			<div id="menu">
 				<a class="menuElement menuSelected" id="menuPlayer">Player</a>
 				<a class="menuElement" id="menuFilter">DSP</a>
-				<a class="menuElement" id="menuConfig">Config</a>
+				<!--a class="menuElement" id="menuConfig">Config</a-->
 				<a class="menuElement" id="menuAbout">Sobre</a>
 				<canvas width="100" height="25" id="timeInfo"></canvas>
 			</div>
@@ -78,9 +78,7 @@
 						<option class="selectGreen" value="selectCustom">Programável</option>
 					</select>
 				</div>
-				<br style="clear: both"/>	
-				<div class="dLine"></div>	
-				<button id="firLbl" class="basicButton">Filtro FIR [esconder]</button>
+				<br style="clear: both"/>
 				<div id="firCoef" class="dspSection">
 					<p>Coeficientes separados por vírgula :</p>
 					<textarea id="textCoeficients" class="basicTextarea"></textarea>
@@ -89,8 +87,6 @@
 					<br/>	
 					<button id="getCoeficients" class="basicButton">Atualizar filtro</button>
 				</div>
-				<div class="dLine"></div>
-				<button id="customLbl" class="basicButton">Filtro programável [mostrar]</button>
 				<div id="customFilter" class="dspSection">
 					<textarea id="customEditor" class="basicTextarea"></textarea>
 					<br/>
