@@ -71,7 +71,7 @@
 				<canvas id="oscilloscope"></canvas>	
 			</div>
 			<div id="container2">
-				<label class="label_text super">Selecione o filtro ativo</label>
+				<label class="label_text super">Selecione o algoritmo ativo</label>
 				<div class="selectGreen">
 					<select id="selectFilter">
 					 	<option class="selectGreen" value="selectFIR">FIR</option>
@@ -88,28 +88,12 @@
 					<button id="getCoeficients" class="basicButton">Atualizar filtro</button>
 				</div>
 				<div id="customFilter" class="dspSection">
+					<p>Código de inicialização de variáveis</p>
+					<textarea id="customEditorInit" class="basicTextarea"></textarea>
+					<p>Algoritmo principal</p>
 					<textarea id="customEditor" class="basicTextarea"></textarea>
 					<br/>
 					<button id="customGET" class="basicButton" style="margin-top: 5px;">Atualizar filtro</button>
-				</div>
-			</div>
-			<div id="container3">
-				<h1>Em desenvolvimento</h1>
-				<div class="divider">
-					<label class="label_text super">Simulador de downsampling </label>	
-					<label class="switch" for="downSampling">			
-						<input type="checkbox" id="downSampling">			
-						<div class="slider"></div>					  
-					</label>
-				</div>
-				<div class="divider">
-					<label class="label_text super">Unidade de processamento </label>
-					<div class="selectGreen">
-						<select>
-						 	<option class="selectGreen" value="procCpu">CPU</option>
-							<option class="selectGreen" value="procGPU">GPU</option>
-						</select>
-					</div>
 				</div>
 			</div>
 			<div id="container4">
