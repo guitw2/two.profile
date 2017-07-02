@@ -1,7 +1,141 @@
+
 <html>
+	<meta charset="UTF-8">
 	<head>
+		<title>Two.DSP</title>
+		<meta name="description" content="Simplified Digital Signal Processing tool">
+		<meta name="keywords" content="DSP,Signal,processing,two.dsp,guitwo">
+		<meta name="author" content="Guilherme Tworkowski">
+		<link rel="stylesheet" type="text/css" href="style.css">
+		<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+		<script src="lib/web-audio-recorder-js/WebAudioRecorder.min.js"></script>
+		<script src="lib/two.dsp.js"></script>
 	</head>
 	<body>
-		<a href="./dsp.html">two.DSP</a>
+		<header>
+		<div id="logo">two.DSP</div>
+			<div id="menu">
+				<a class="menuElement menuSelected" id="menuPlayer">Player</a>
+				<a class="menuElement" id="menuFilter">DSP</a>
+				<a class="menuElement" id="menuAbout">Sobre</a>
+				<canvas width="100" height="25" id="timeInfo"></canvas>
+			</div>
+		</header>
+		<br style="clear: both"/>
+		<div id="container0">
+			<div id="container1">
+				<div id="myModal" class="modal">
+					<div class="modal-content">
+						<center>
+							<p style="color: #232323;">Carregando o arquivo</p>
+						</center>
+				  </div>
+				</div>
+				<div id="decodingModal" class="modal">
+					<center>
+						<div class="modal-content">
+							<p style="color: #232323;">Decodificando o arquivo</p>
+						</div>
+					</center>
+				</div>
+				<div class="divider">
+					<input class="input_button" id="audio_file" type="file" accept="audio/*"/>
+					<button id="load_file">Carregar áudio</button>
+					<button id="load_input">Carregar entrada</button>
+					<div style=" display:inline-block; margin-left: 3em; padding-left: 3em; border-left: 1px solid #525252;">
+						<button class="record_button" id="record" disabled="disabled">Record</button>
+						<button class="cancel_record_button" id="cancel_recording" disabled="disabled">Cancel</button>
+					</div>
+				</div>	
+				<br style="clear: both"/>
+				<div class="divider">
+					<button class="play_button" id="play" disabled="disabled">PLAY</button>
+					<button class="stop_button" id="stop" disabled="disabled">STOP</button>
+				</div>
+				<br style="clear:both"/>
+				<div class="divider">
+					<div style="display:inline-block;">	
+						<label class="switch" for="power">			
+						<input type="checkbox" id="power">			
+							<div class="slider"></div>		  
+						</label>
+						<input id="vol-control" type="range" value="0.3" min="0" max="1" step="0.05"></input><br/>
+						<div style="display:table">
+							<div style="display:inline-block"><p class="label_text">DSP</p></div>
+							<div style="display:inline-block; margin-left: 3.5em;"><p id="volume_text" class="label_text">Volume: 30%</p></div>
+						</div>
+					</div>
+				</div>	
+				<br style="clear: both"/>	
+				<canvas id="oscilloscope"></canvas>	
+			</div>
+			<div id="container2">
+				<label class="label_text super">Selecione o algoritmo ativo</label>
+				<div class="selectGreen">
+					<select id="selectFilter">
+					 	<option class="selectGreen" value="selectFIR">FIR</option>
+						<option class="selectGreen" value="selectCustom">Programável</option>
+						<option class="selectGreen" value="selectParam">Parametrizado</option>
+					</select>
+				</div>
+				<br style="clear: both"/>
+				<div id="firCoef" class="dspSection">
+					<p>Coeficientes separados por vírgula :</p>
+					<textarea id="textCoeficients" class="basicTextarea"></textarea>
+					<br style="clear: both"/>	
+					<canvas id="graphImpulse"></canvas>
+					<br/>	
+					<button id="getCoeficients" class="basicButton">Atualizar filtro</button>
+				</div>
+				<div id="customFilter" class="dspSection">
+					<p>Código de inicialização de variáveis</p>
+					<textarea id="customEditorInit" class="basicTextarea"></textarea>
+					<p>Algoritmo principal</p>
+					<textarea id="customEditor" class="basicTextarea"></textarea>
+					<br/>
+					<button id="customGET" class="basicButton" style="margin-top: 5px;">Atualizar filtro</button>
+				</div>
+				<div id="paramFilter" class="dspSection">
+					<div style="margin: 5px; display:inline-block">
+						<label class="label_text">Tipo</label>
+							<div class="selectGreen">
+								<select id="selectBiquadType">
+								 	<option class="selectGreen" value="lowpass">lowpass</option>
+									<option class="selectGreen" value="highpass">highpass</option>
+									<option class="selectGreen" value="bandpass">bandpass</option>
+									<option class="selectGreen" value="lowshelf">lowshelf</option>
+									<option class="selectGreen" value="highshelf">highshelf</option>
+									<option class="selectGreen" value="peaking">peaking</option>
+									<option class="selectGreen" value="notch">notch</option>
+									<option class="selectGreen" value="allpass">allpass</option>
+								</select>
+							</div>						
+					</div>
+					<div style="margin: 5px; display:inline-block">
+						<label class="label_text">Frequência</label> <input id="sliderFrequency" type="range" value=3000 min=1 max=22000 step=1 style="width: 300px;"></input> <label class="label_text" id="frequencyLabel">3000 Hz</label>
+						<br/>
+					</div>
+					<div style="margin: 5px;">
+						<label class="label_text">Fator Q</label> 
+						<input id="biquadQ" class="greenNumber" type="range" value=1 min=0.0001 max=100 step=0.1 style="width: 300px;"> 
+						<label class="label_text" id="labelFatorQ">1</label>
+						<label class="label_text" style="border-left: solid 1px #333333; margin-left: 5px; padding-left: 10px;">Ganho</label> 
+						<input id="gain" class="greenNumber" type="range" value=1 min=-100 max=100 step=1 style="width: 300px;"> 
+						<label class="label_text" id="labelGain">1</label>
+						<br"/>
+					</div>
+				</div>
+			</div>
+			<div id="container4">
+				<center><img src="./img/twoDSP.png" width=640/></center>
+				<p>Two.DSP é um projeto em desenvolvimento por <a href="http://guitwo.com/">Guilherme Tworkowski</a> como trabalho de conclusão do curso de Engenharia da Computação.</p>
+				<p>Seu principal objetivo é servir de apoio às disciplinas de DSP.</p>
+				<p>Veja também no github: <a href="http://github.com/guitw2/two.dsp/">github.com/guitw2/two.dsp</a>
+			</div>
+		</div>
+		<br/>
+		<footer>
+			<p>Guilherme Tworkowski | <a href="mailto:guitw2@gmail.com">guitw2@gmail.com</a></p>
+		</footer>
 	</body>
 </html>
