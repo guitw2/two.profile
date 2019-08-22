@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Vini Counter 0.1</title>
+	<meta name="author" content="Guilherme Tworkowski">
+	<meta charset="UTF-8">
+	<style type="text/css">
+		body{
+			margin-top: 10%;
+		}
+		#counter{
+			display: inline;
+		}
+		.big{
+			font-size: 150px;
+			margin: 0;
+		}
+		.medium{
+			font-size: 50px;
+			margin: 0 30px;
+		}
+		.sameLine{
+			display: inline-block;
+		}
+		#reset{
+			font-size: 50px;
+			margin-top: 50px;
+		}
+	</style>
+	<script>
+		var days = 0;
+		var hours = 0;
+		var minutes = 0;
+		var seconds = 0;
+
+		function updateBody(){
+			if(seconds<10){
+				document.getElementById("seconds").innerHTML = "0"+seconds;
+			}
+			else{
+				document.getElementById("seconds").innerHTML = seconds.toString();
+			}
+			if(minutes<10){
+				document.getElementById("minutes").innerHTML = "0"+minutes;
+			}
+			else{
+				document.getElementById("minutes").innerHTML = minutes.toString();
+			}
+			if(hours<10){
+				document.getElementById("hours").innerHTML = "0"+hours;
+			}
+			else{
+				document.getElementById("hours").innerHTML = hours.toString();
+			}
+			if(days<10){
+				document.getElementById("days").innerHTML = "0"+days;
+			}
+			else{
+				document.getElementById("days").innerHTML = days.toString();
+			}
+		}
+
+		function count(){
+			seconds+=1;
+			if(seconds>59){
+				seconds=0;
+				minutes+=1;
+			}
+			if(minutes>59){
+				minutes=0;
+				hours+=1;
+			}
+			if(hours>24){
+				hours=0;
+				days+=1;
+			}
+			console.log("days: "+days+"hours: "+hours+"minutes: "+minutes+"seconds: "+seconds);
+			updateBody();
+			var t = setTimeout(count, 1000);
+		}
+
+		function reset(){
+			days = 0;
+			hours = 0;
+			minutes = 0;
+			seconds = 0;
+			updateBody();
+		}
+	</script>
+</head>
+<body onload="count()">
+	<center>
+		<h1>Vini não queima o próprio filme a</h1>
+		<div id="counter">
+			<div class="sameLine">
+				<span id="days" class="big"> 00 </span>
+				<span class="big" class="sameLine">:</span>
+				<br/>
+				<span class="medium">dias</span>
+			</div>
+			<div class="sameLine">
+				<span id="hours" class="big"> 00</span>
+				<span class="big" class="sameLine">:</span>
+				<br/>
+				<p class="medium">horas</p>
+			</div>
+			<div class="sameLine">
+				<span id="minutes" class="big"> 00</span>
+				<span class="big" class="sameLine">:</span>
+				<br/>
+				<p class="medium">minutos</p>
+			</div>
+			<div class="sameLine">
+				<span id="seconds" class="big"> 00 </span>
+				<br/>
+				<p class="medium">segundos</p>
+			</div>
+			<br/>
+			<button id="reset" onclick="reset()">Reset</button>
+		</div>
+	</center>
+</body>
+</html>
