@@ -60,8 +60,15 @@
 			}
 		}
 
+
+		var startTime = new Date().getTime();
 		function count(){
-			seconds+=1;
+			var elapsedTime = new Date().getTime() - startTime;
+			elapsedSeconds = Math.floor(elapsedTime / 100) / 10;
+			if(elapsedSeconds>=1){
+				seconds+=1;
+				startTime = new Date().getTime();
+			}
 			if(seconds>59){
 				seconds=0;
 				minutes+=1;
@@ -76,7 +83,7 @@
 			}
 			console.log("days: "+days+"hours: "+hours+"minutes: "+minutes+"seconds: "+seconds);
 			updateBody();
-			var t = setTimeout(count, 1000);
+			var t = setTimeout(count, 100);
 		}
 
 		function reset(){
@@ -94,19 +101,19 @@
 		<div id="counter">
 			<div class="sameLine">
 				<span id="days" class="big"> 00 </span>
-				<span class="big" class="sameLine">:</span>
+				<span class="big" class="sameLine">: </span>
 				<br/>
 				<span class="medium">dias</span>
 			</div>
 			<div class="sameLine">
 				<span id="hours" class="big"> 00</span>
-				<span class="big" class="sameLine">:</span>
+				<span class="big" class="sameLine">: </span>
 				<br/>
 				<p class="medium">horas</p>
 			</div>
 			<div class="sameLine">
 				<span id="minutes" class="big"> 00</span>
-				<span class="big" class="sameLine">:</span>
+				<span class="big" class="sameLine">: </span>
 				<br/>
 				<p class="medium">minutos</p>
 			</div>
