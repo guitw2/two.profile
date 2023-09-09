@@ -3,15 +3,20 @@ let lastFrameTime = 0;
 const frameRate = 24;
 const movementSpan = 7;
 var aboutTextVisible = false;
+var mousePosition = { x: 0, y: 0 };
 
 window.onload = function() {
     const canvas = document.getElementById("profilePicture");
     const ctx = canvas.getContext("2d");
 
+    function invertedDistance(x1,x2,y1,y2,f){
+    	return 1+f/Math.sqrt(Math.pow(x1-x2,2)+Math.pow(y1-y2,2));
+    }
+
     function drawLine(line) {
         ctx.beginPath();
-        ctx.moveTo(line.start.x + Math.random() * movementSpan, line.start.y + Math.random() * movementSpan);
-        ctx.lineTo(line.end.x + Math.random() * movementSpan, line.end.y + Math.random() * movementSpan);
+        ctx.moveTo(line.start.x + (0-Math.random()+.5)  * movementSpan * invertedDistance(mousePosition.x,line.start.x,mousePosition.y,line.start.y,100), line.start.y + (0-Math.random()+.5)  * movementSpan * invertedDistance(mousePosition.x,line.start.x,mousePosition.y,line.start.y,100));
+        ctx.lineTo(line.end.x + (0-Math.random()+.5)  * movementSpan * invertedDistance(mousePosition.x,line.end.x,mousePosition.y,line.end.y,100), line.end.y + (0-Math.random()+.5)  * movementSpan * invertedDistance(mousePosition.x,line.end.x,mousePosition.y,line.end.y,100));
         ctx.stroke();
     }
 
@@ -21,40 +26,51 @@ window.onload = function() {
         });
     }
 
-    for(let clickable of document.getElementsByClassName('clickable')){
-    	clickable.onclick = redirect;
+    for (let clickable of document.getElementsByClassName('clickable')) {
+        clickable.onclick = redirect;
     }
 
-    function toggleAbout(){
-    	if(aboutTextVisible){
-    		document.getElementById('profilePicture').style.display='block'
-    		document.getElementById('aboutText').style.display='none';
-    		document.getElementById('about').innerText = 'About';
-    		aboutTextVisible=false;
-    	}
-    	else{
-    		document.getElementById('profilePicture').style.display='none'
-    		document.getElementById('aboutText').style.display='block';
-    		document.getElementById('about').innerText = 'Picture';
-    		aboutTextVisible=true;
-    	}
+    function toggleAbout() {
+        if (aboutTextVisible) {
+            document.getElementById('profilePicture').style.display = 'block'
+            document.getElementById('aboutText').style.display = 'none';
+            document.getElementById('about').innerText = 'About';
+            aboutTextVisible = false;
+        } else {
+            document.getElementById('profilePicture').style.display = 'none'
+            document.getElementById('aboutText').style.display = 'block';
+            document.getElementById('about').innerText = 'Picture';
+            aboutTextVisible = true;
+        }
     }
 
-    function redirect(e){
-    	switch(e.target.id){
-    		case 'about':
-    			toggleAbout();
-    			break;
-    		case 'linkedin':
-    			window.open('https://www.linkedin.com/in/guitwo/','_blank');
-    			break;
-    		case 'instagram':
-    			window.open('https://www.instagram.com/gui.two/','_blank');
-    			break;
-    	}
+    canvas.onmousemove = updateMousePosition;
+
+    function updateMousePosition(e) {
+        var rect = canvas.getBoundingClientRect();
+        mousePosition = {
+            x: Math.floor(e.clientX - rect.left),
+            y: Math.floor(e.clientY - rect.top)
+        };
+        return mousePosition;
+    }
+
+    function redirect(e) {
+        switch (e.target.id) {
+            case 'about':
+                toggleAbout();
+                break;
+            case 'linkedin':
+                window.open('https://www.linkedin.com/in/guitwo/', '_blank');
+                break;
+            case 'instagram':
+                window.open('https://www.instagram.com/gui.two/', '_blank');
+                break;
+        }
     }
 
     function draw(timestamp) {
+    	console.log(mousePosition);
         const deltaTime = timestamp - lastFrameTime;
         if (deltaTime > 1000 / frameRate) {
             ctx.fillStyle = "#fff";
