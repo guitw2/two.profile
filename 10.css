@@ -1,0 +1,39 @@
+.centeredV {
+    top: 23%;
+}
+
+.centeredH {
+    position: fixed;
+    display: flex;
+    justify-content: space-between;
+    left: 50%;
+    transform: translate(-50%, 0);
+    text-align: center;
+}
+
+.panels {
+    padding: 10px;
+    flex: 1;
+}
+
+.left-panel {
+    border-right: 1px solid black;
+    padding-right: 15px;
+    line-height: 210%;
+    padding-top: 50%;
+}
+
+.noBullets {
+    list-style-type: none;
+}
+
+.clickable:hover {
+    cursor: pointer;
+    color: #fa0;
+}
+
+#aboutText {
+    width: 500px;
+    padding-top: 50%;
+    text-align: left;
+}
