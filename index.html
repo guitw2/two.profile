@@ -1,157 +1,31 @@
 <html>
 <meta charset="UTF-8">
 <head>
-<style>
-	body {
-		font-family: "lucida grande","Segoe UI",Arial, sans-serif; 
-		background-color: #323232;
-		//background-image: url("./body-bg.png");
-		font-size: 14px;
-		padding:0;
-		margin:0;
-	}
-	.divider{
-		margin: 1.5em;
-		width: 100%;
-		display:inline-block;
-	}	
-	#container0{
-		display: table;
-		margin: auto;
-	}
-	#container1{
-		position: relative;
-		margin: 3.2em 1em 1em 1em;
-		padding: 1em;
-		//border-radius: 2em;
-		background-color: #424242;
-		width: 720px;
-		height: 480px;
-	}
-	#container2{
-		display: none;
-		position: relative;
-		margin: 3.2em 1em 1em 1em;
-		padding: 1em;
-		//border-radius: 2em;
-		background-color: #424242;
-		width: 720px;
-		height: 480px;
-	}
-	#logo{
-		display: inline-block;
-		border-right: 0.5em solid #323232; 
-		width: 5em;
-	}
-	#audio_file{
-		background-color: inherit;
-		border: 1px solid #aaa; 
-		padding: 0.2em;
-		width: 23em;
-	}
-	#load_file{
-		height: 2em;
-	}
-	#menu{
-		font-size: 0.75em;
-		display: inline-block;
-		color: #424242;
-	}
-	.menuElement{
-		background-color: #232323;
-		border-right: 0.1em solid #323232; 
-		display: inline-block;
-		padding: 0 1em;
-		line-height:2em;
-	}
-	.menuElement:hover{
-		cursor: pointer;
-		background-color: #292929;
-	}
-	.menuSelected{
-		color: #709070;
-	}
-	header{
-		font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
-		font-size:2.2em; 
-		background-color: #232323; 
-		color: #fff; 
-		padding-left: 1em;
-		position: fixed;
-		width: 100%; 
-		height: 1.6em; 
-		line-height:1.6em;
-		display: inline-block;
-	}	
-	footer{
-		margin: 1em;
-		color: #aaa;
-		position:fixed;
-		bottom:0;
-	}	
-	a{
-		color: bbbbcc;
-	}
-	.label_text{
-		color: #aaa;
-		margin: 0;
-	}
-</style>
-<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-<script>	
-	$(document).ready(function(){
-		$("#menuAbout").click(function(){
-			$("#container1").show();
-			$("#container2").hide();
-			$("#menuAbout").addClass("menuSelected");
-			$("#menuDSP").removeClass("menuSelected");
-			
-		});
-		$("#menuDSP").click(function(){
-			window.open("./dsp.html", "_self");
-		});
-	});
-</script>
+    <title>guitwo.com</title>
+    <script src='./10.js'></script>
+    <link rel='stylesheet' href='./10.css'>
 </head>
+
 <body>
-	<header><div id="logo">gui.two</div><div id="menu"><a class="menuElement menuSelected" id="menuAbout">About</a><a class="menuElement" id="menuDSP">two.dsp</a></div></header>
-	<br style="clear: both"/>
-	<div id="container0">
-	<div id="container1">
-	<div id="divider">
-		<div style="float:left;text-align: left">
-			<img src="./images/guitwo.jpg" height="460"></img>
-		</div>
-		<div style="float:right;text-align: left">
-			<p>A curious. Guilherme is always interested on how things works.</p>
-			<p>Graduating in computer's engineering in 2017, 
-			<br/>he is interested in any piece of technology.</p>
-			<p>- Electronics:
-			<br/>In primary school, started to wonder how circuits worked.
-			<br/>After, got in love with his first Arduino.
-			<br/>In college, learned about VHDL and advanced circuitry.
-			<br/>Also loves to play with audio amplifyers ICs, on free time.
-			</p>
-			<p>- Programming:
-			<br/>Still young, started with "hello world!" in C.
-			<br/>Created some small programs with Python,
-			<br/>like a remote controller for media playback controll
-			<br/>and an image to ascii converter.
-			<br/>Currently working on a Javascript DSP project</p>
-			<p>- Art:
-			<br/>Remember Winamp? 
-			<br/>he used to make music reactive visuals with it.
-			<br/>Also, knows some tricks on photoshop .
-			<br/>Pixel, ASCII, Glitch or macro photography, loves it all! 
-			</p>
-		</div>
-	</div>
-	</div>
-	<div id="container2">Aqui vai o designer de filtros</div>
-	</div>
-	<br style="clear:both"/>
-	<footer>
-	  <p><a href="http://guitwo.com">Guilherme Tworkowski</a> | <a href="mailto:guitw2@gmail.com">guitw2@gmail.com</a></p>
-	</footer>
+    <div class='centeredV centeredH'>
+        <div class='panels left-panel'>
+            <ul class='noBullets'>
+                <li class='clickable' id='about'>About</li>
+                <li class='clickable' id='linkedin'>Linkedin</li>
+                <li class='clickable' id='instagram'>Instagram</li>
+            </ul>
+        </div>
+        <div class='panels'>
+             <canvas id='profilePicture' width='500' height='500' style='display: block;'></canvas>
+             <span id='aboutText' style='display: none; max-width:500px'>
+                <b>Guilherme Tworkowski</b>, also known as <b>gui two</b> or simply <b>g2</b>. <br/><br/>
+
+                Gui holds a Bachelor's degree in Computer Engineering and he is currently working as a Senior Support Engineer. <br/><br/>
+
+                He likes to work solving complex problems, automating processes and creating new tools.<br/><br/>
+                On his free time, he's usually listening to music (he has a collection of earphones), playing his xbox, or creating minimalistic sites just like this one.
+            </span>
+        </div>
+    </div>
 </body>
 </html>
