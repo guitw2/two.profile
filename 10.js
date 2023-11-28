@@ -70,7 +70,6 @@ window.onload = function() {
     }
 
     function draw(timestamp) {
-    	console.log(mousePosition);
         const deltaTime = timestamp - lastFrameTime;
         if (deltaTime > 1000 / frameRate) {
             ctx.fillStyle = "#fff";
